@@ -880,6 +880,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
     else
       ss->staticEval = eval = -(ss-1)->staticEval + 2 * Tempo;
 
+    if(!excludedMove)
     tte_save(tte, posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, 0,
         eval);
   }
