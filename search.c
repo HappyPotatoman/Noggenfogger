@@ -1128,11 +1128,7 @@ moves_loop: // When in check search starts from here
 
         // Futility pruning: parent node
         if (   !inCheck
-            && ss->staticEval + 174 + 157 * lmrDepth <= alpha
-            &&  (*cmh )[movedPiece][to_sq(move)]
-              + (*fmh )[movedPiece][to_sq(move)]
-              + (*fmh2)[movedPiece][to_sq(move)]
-              + (*fmh3)[movedPiece][to_sq(move)] / 3 < 28255)
+            && ss->staticEval + 174 + 157 * lmrDepth <= alpha)
           continue;
 
         // Prune moves with negative SEE at low depths and below a decreasing
