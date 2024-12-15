@@ -1281,8 +1281,7 @@ moves_loop: // When in check search starts from here
                        + (*pos->mainHistory)[!stm()][from_to(move)]
                        - 4741;
 
-        if (!inCheck)
-          r -= ss->statScore / 14790;
+        r -= ss->statScore / 14721;
       }
 
       Depth d = clamp(newDepth - r, 1, newDepth + (r < -1 && moveCount <= 5));
@@ -1585,7 +1584,7 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
     if (!is_legal(pos, move)) {
       continue;
     }
-    
+
     givesCheck = gives_check(pos, ss, move);
 
     moveCount++;
