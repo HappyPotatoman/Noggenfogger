@@ -898,7 +898,6 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
 
   // Step 7. Futility pruning: child node
   if (   !PvNode
-      &&  depth < 9
       &&  eval - futility_margin(depth, improving) >= beta
       &&  eval < VALUE_KNOWN_WIN)  // Do not return unproven wins
     return eval; // - futility_margin(depth); (do not do the right thing)
@@ -1273,7 +1272,7 @@ moves_loop: // When in check search starts from here
           r += pos->failedHighCnt * pos->failedHighCnt * moveCount / 512;
 
         // Increase reduction for cut nodes
-        if (cutNode)
+        if (cutNode && move != ss->killers[0])
           r += 2;
 
         ss->statScore =  (*cmh )[movedPiece][to_sq(move)]
