@@ -1262,27 +1262,25 @@ moves_loop: // When in check search starts from here
       if (singularQuietLMR)
         r--;
 
-      if (!captureOrPromotion) {
-        // Increase reduction if ttMove is a capture
-        if (ttCapture)
-          r++;
+      // Increase reduction if ttMove is a capture
+      if (ttCapture)
+        r++;
 
-        // Increase reduction at root if failing high
-        if (rootNode)
-          r += pos->failedHighCnt * pos->failedHighCnt * moveCount / 512;
+      // Increase reduction at root if failing high
+      if (rootNode)
+        r += pos->failedHighCnt * pos->failedHighCnt * moveCount / 512;
 
-        // Increase reduction for cut nodes
-        if (cutNode && move != ss->killers[0])
-          r += 2;
+      // Increase reduction for cut nodes
+      if (cutNode && move != ss->killers[0])
+        r += 2;
 
-        ss->statScore =  (*cmh )[movedPiece][to_sq(move)]
-                       + (*fmh )[movedPiece][to_sq(move)]
-                       + (*fmh2)[movedPiece][to_sq(move)]
-                       + (*pos->mainHistory)[!stm()][from_to(move)]
-                       - 4741;
+      ss->statScore =  (*cmh )[movedPiece][to_sq(move)]
+                      + (*fmh )[movedPiece][to_sq(move)]
+                      + (*fmh2)[movedPiece][to_sq(move)]
+                      + (*pos->mainHistory)[!stm()][from_to(move)]
+                      - 4741;
 
-        r -= ss->statScore / 14721;
-      }
+      r -= ss->statScore / 14721;
 
       Depth d = clamp(newDepth - r, 1, newDepth + (r < -1 && moveCount <= 5));
 
