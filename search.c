@@ -162,7 +162,6 @@ void search_clear(void)
     stats_clear(pos->counterMoves);
     stats_clear(pos->mainHistory);
     stats_clear(pos->captureHistory);
-    stats_clear(pos->lowPlyHistory);
   }
 
   // TB_release();
@@ -416,10 +415,6 @@ void thread_search(Position *pos)
       for (int i = 0; i < 4; i++)
         mainThread.iterValue[i] = mainThread.previousScore;
   }
-
-  memmove(&((*pos->lowPlyHistory)[0]), &((*pos->lowPlyHistory)[2]),
-      (MAX_LPH - 2) * sizeof((*pos->lowPlyHistory)[0]));
-  memset(&((*pos->lowPlyHistory)[MAX_LPH - 2]), 0, 2 * sizeof((*pos->lowPlyHistory)[0]));
 
   int multiPV = option_value(OPT_MULTI_PV);
 #if 0
@@ -763,13 +758,6 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
   if (!excludedMove)
     ss->ttPv = PvNode || (ss->ttHit && tte_is_pv(tte));
   formerPv = ss->ttPv && !PvNode;
-
-  if (   ss->ttPv
-      && depth > 12
-      && ss->ply - 1 < MAX_LPH
-      && !captured_piece()
-      && move_is_ok((ss-1)->currentMove))
-    lph_update(*pos->lowPlyHistory, ss->ply - 1, (ss-1)->currentMove, stat_bonus(depth - 5));
 
   // pos->ttHitAverage can be used to approximate the running average of ttHit
   pos->ttHitAverage = (ttHitAverageWindow - 1) * pos->ttHitAverage / ttHitAverageWindow + ttHitAverageResolution * ss->ttHit;
@@ -1823,9 +1811,6 @@ static void update_quiet_stats(const Position *pos, Stack *ss, Move move,
     Square prevSq = to_sq((ss-1)->currentMove);
     (*pos->counterMoves)[piece_on(prevSq)][prevSq] = move;
   }
-
-  if (depth > 11 && ss->ply < MAX_LPH)
-    lph_update(*pos->lowPlyHistory, ss->ply, move, stat_bonus(depth - 7));
 }
 
 #if 0

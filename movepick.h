@@ -49,12 +49,6 @@ INLINE void cpth_update(CapturePieceToHistory history, Piece pc, Square to,
   history[pc][to][captured] += v - history[pc][to][captured] * abs(v) / 10692;
 }
 
-INLINE void lph_update(LowPlyHistory history, int ply, Move m, int v)
-{
-  m &= 4095;
-  history[ply][m] += v - history[ply][m] * abs(v) / 10692;
-}
-
 enum {
   ST_MAIN_SEARCH, ST_CAPTURES_INIT, ST_GOOD_CAPTURES, ST_KILLERS, ST_KILLERS_2,
   ST_QUIET_INIT, ST_QUIET, ST_BAD_CAPTURES,
