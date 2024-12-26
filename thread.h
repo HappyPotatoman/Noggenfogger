@@ -97,7 +97,6 @@ void threads_exit(void);
 void threads_start_thinking(Position *pos, LimitsType *);
 void threads_set_number(int num);
 uint64_t threads_nodes_searched(void);
-// uint64_t threads_tb_hits(void);
 
 extern ThreadPool Threads;
 
