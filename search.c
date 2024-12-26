@@ -458,10 +458,8 @@ void thread_search(Position *pos)
       pos->pvIdx = pvIdx;
       if (pvIdx == pvLast) {
         pvFirst = pvLast;
-        for (pvLast++; pvLast < rm->size; pvLast++)
-          if (0 != 0)
-            break;
-        pos->pvLast = pvLast;
+        pvLast = rm->size;
+        pos->pvLast = rm->size;
       }
 
       pos->selDepth = 0;
