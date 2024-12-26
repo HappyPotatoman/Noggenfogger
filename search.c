@@ -1937,7 +1937,7 @@ void start_thinking(Position *root, bool ponderMode)
       rm->move[i].previousScore = -VALUE_INFINITE;
       rm->move[i].selDepth = 0;
       rm->move[i].tbRank = moves->move[i].tbRank;
-      rm->move[i].tbScore = moves->move[i].tbScore;
+
     }
     memcpy(pos, root, offsetof(Position, moveList));
     // Copy enough of the root State buffer.
