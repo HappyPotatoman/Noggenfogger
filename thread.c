@@ -30,7 +30,6 @@
 #include "thread.h"
 #include "tt.h"
 #include "uci.h"
-// #include "tbprobe.h"
 
 static void thread_idle_loop(Position *pos);
 
@@ -418,14 +417,3 @@ uint64_t threads_nodes_searched(void)
     nodes += Threads.pos[idx]->nodes;
   return nodes;
 }
-
-
-// // threads_tb_hits() returns the number of TB hits.
-
-// uint64_t threads_tb_hits(void)
-// {
-//   uint64_t hits = 0;
-//   for (int idx = 0; idx < Threads.numThreads; idx++)
-//     hits += Threads.pos[idx]->tbHits;
-//   return hits;
-// }

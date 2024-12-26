@@ -33,7 +33,6 @@
 // #include "polybook.h"
 #include "search.h"
 #include "settings.h"
-// #include "tbprobe.h"
 #include "thread.h"
 #include "tt.h"
 #include "uci.h"

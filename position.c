@@ -97,45 +97,6 @@ INLINE void set_check_info(Position *pos)
   st->checkSquares[KING]   = 0;
 }
 
-
-// // print_pos() prints an ASCII representation of the position to stdout.
-
-// void print_pos(Position *pos)
-// {
-//   char fen[128];
-//   pos_fen(pos, fen);
-
-//   flockfile(stdout);
-//   printf("\n +---+---+---+---+---+---+---+---+\n");
-
-//   for (int r = 7; r >= 0; r--) {
-//     for (int f = 0; f <= 7; f++)
-//       printf(" | %c", PieceToChar[pos->board[8 * r + f]]);
-
-//     printf(" | %d\n +---+---+---+---+---+---+---+---+\n", r + 1);
-//   }
-
-//   printf("   a   b   c   d   e   f   g   h\n\nFen: %s\nKey: %16"PRIX64"\nCheckers: ", fen, key());
-
-//   char buf[16];
-//   for (Bitboard b = checkers(); b; )
-//     printf("%s ", uci_square(buf, pop_lsb(&b)));
-
-//   if (popcount(pieces()) <= TB_MaxCardinality && !can_castle_cr(ANY_CASTLING)) {
-//     int s1, s2;
-//     int wdl = TB_probe_wdl(pos, &s1);
-//     int dtz = TB_probe_dtz(pos, &s2);
-//     printf("\nTablebases WDL: %4d (%d)\nTablebases DTZ: %4d (%d)", wdl, s1, dtz, s2);
-//     if (s1 && wdl != 0) {
-//       Value dtm = TB_probe_dtm(pos, wdl, &s1);
-//       printf("\nTablebases DTM: %s (%d)", uci_value(buf, dtm), s1);
-//     }
-//   }
-//   printf("\n");
-//   fflush(stdout);
-//   funlockfile(stdout);
-// }
-
 INLINE Key H1(Key h)
 {
   return h & 0x1fff;

@@ -49,7 +49,6 @@ int main(int argc, char **argv)
   uci_loop(argc, argv);
 
   threads_exit();
-  // TB_free();
   options_free();
   tt_free();
   // pb_free();
