@@ -70,8 +70,8 @@ static void score_captures(const Position *pos)
   // preferring captures near our with a good history.
 
   for (ExtMove *m = st->cur; m < st->endMoves; m++)
-    m->value =  PieceValue[MG][piece_on(to_sq(m->move))] * 6
-              + (*history)[moved_piece(m->move)][to_sq(m->move)][type_of_p(piece_on(to_sq(m->move)))];
+    m->value =  (PieceValue[MG][piece_on(to_sq(m->move))] * 7
+              + (*history)[moved_piece(m->move)][to_sq(m->move)][type_of_p(piece_on(to_sq(m->move)))]) / 16;
 }
 
 SMALL
@@ -147,7 +147,7 @@ Move next_move(const Position *pos, bool skipQuiets)
     while (st->cur < st->endMoves) {
       move = pick_best(st->cur++, st->endMoves);
       if (move != st->ttMove) {
-        if (see_test(pos, move, -69 * (st->cur-1)->value / 1024))
+        if (see_test(pos, move, (st->cur-1)->value))
           return move;
 
         // Losing capture, move it to the beginning of the array.
