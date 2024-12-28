@@ -198,7 +198,6 @@ struct Position {
 
 // FEN string input/output
 void pos_set(Position *pos, char *fen, int isChess960);
-void pos_fen(const Position *pos, char *fen);
 
 //PURE Bitboard attackers_to_occ(const Position *pos, Square s, Bitboard occupied);
 PURE Bitboard slider_blockers(const Position *pos, Bitboard sliders, Square s,

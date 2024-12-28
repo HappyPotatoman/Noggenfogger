@@ -330,8 +330,6 @@ void mainthread_search(void)
   }
 
   mainThread.previousScore = bestThread->rootMoves->move[0].score;
-  char fen_buf[128];  // Buffer to hold the FEN string
-  pos_fen(pos, fen_buf);
 
   // Send new PV when needed
   if (bestThread != pos)
@@ -341,22 +339,8 @@ void mainthread_search(void)
   flockfile(stdout);
   printf("bestmove %s", uci_move(buf, bestThread->rootMoves->move[0].pv[0], is_chess960()));
 
-  if (bestThread->rootMoves->move[0].pvSize > 1 || extract_ponder_from_tt(&bestThread->rootMoves->move[0], pos)) {
-      printf(" ponder %s", uci_move(buf, bestThread->rootMoves->move[0].pv[1], is_chess960()));
-      Position temp_pos = *pos;  // Make a copy of the current position
-      // Apply the best move to the temporary position
-      Stack dummy_stack = {0};
-      do_move(&temp_pos, bestThread->rootMoves->move[0].pv[0], gives_check(&temp_pos, &dummy_stack, bestThread->rootMoves->move[0].pv[0]));
-
-      // Apply the ponder move if available
-      if (bestThread->rootMoves->move[0].pvSize > 1) {
-          do_move(&temp_pos, bestThread->rootMoves->move[0].pv[1], gives_check(&temp_pos, &dummy_stack, bestThread->rootMoves->move[0].pv[1]));
-      }
-
-      // Generate FEN from the updated position
-      pos_fen(&temp_pos, fen_buf);
-      printf(" fen %s\n", fen_buf);
-  }
+  if (bestThread->rootMoves->move[0].pvSize > 1 || extract_ponder_from_tt(&bestThread->rootMoves->move[0], pos)) 
+    printf(" ponder %s", uci_move(buf, bestThread->rootMoves->move[0].pv[1], is_chess960()));
 
 
   printf("\n");
