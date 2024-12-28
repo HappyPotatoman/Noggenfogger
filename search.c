@@ -1184,6 +1184,11 @@ moves_loop: // When in check search starts from here
       if (cutNode && move != ss->killers[0])
         r += 2;
 
+      // Decrease reduction if move is a killer and we have a good history
+      if (move == ss->killers[0]
+          && (*cmh)[movedPiece][to_sq(move)] >= 3600)
+          r--;
+
       ss->statScore =  (*cmh )[movedPiece][to_sq(move)]
                       + (*fmh )[movedPiece][to_sq(move)]
                       + (*fmh2)[movedPiece][to_sq(move)]
