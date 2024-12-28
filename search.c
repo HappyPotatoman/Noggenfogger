@@ -1172,6 +1172,10 @@ moves_loop: // When in check search starts from here
       if (ttCapture)
         r++;
 
+      // Increase depth based reduction if PvNode
+      if (PvNode)
+        r -= 15 / ( 3 + depth );
+
       // Increase reduction at root if failing high
       if (rootNode)
         r += pos->failedHighCnt * pos->failedHighCnt * moveCount / 512;
