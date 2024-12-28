@@ -1520,7 +1520,7 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
 
     // Do not search moves with negative SEE values
     if (    bestValue > VALUE_TB_LOSS_IN_MAX_PLY
-        && !see_test(pos, move, 0))
+        && !see_test(pos, move, -108))
       continue;
 
     // Speculative prefetch as early as possible
