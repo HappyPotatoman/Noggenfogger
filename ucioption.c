@@ -65,10 +65,10 @@ static void on_threads(Option *opt)
   delayedSettings.numThreads = opt->value;
 }
 
-// static void on_large_pages(Option *opt)
-// {
-//   delayedSettings.largePages = opt->value;
-// }
+static void on_large_pages(Option *opt)
+{
+  delayedSettings.largePages = opt->value;
+}
 
 // static void on_book_file(Option *opt)
 // {
@@ -118,7 +118,7 @@ static Option optionsMap[] = {
     "Hybrid var Hybrid var Pure var Classical", NULL, 0, NULL },
 #endif
 #endif
-  // { "LargePages", OPT_TYPE_CHECK, 1, 0, 0, NULL, on_large_pages, 0, NULL },
+  { "LargePages", OPT_TYPE_CHECK, 1, 0, 0, NULL, on_large_pages, 0, NULL },
   // { "NUMA", OPT_TYPE_STRING, 0, 0, 0, "all", on_numa, 0, NULL },
   { 0 }
 };
