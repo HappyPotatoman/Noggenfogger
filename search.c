@@ -1153,7 +1153,7 @@ moves_loop: // When in check search starts from here
       // Decrease reduction if position is or has been on the PV and the node
       // is not likely to fail low
       if (ss->ttPv && !likelyFailLow)
-        r -= 2;
+        r -= cutNode && tte_depth(tte) >= depth + 3 ? 3 : 2;
 
       // Increase reduction at root and non-PV nodes when the best move
       // does not change frequently
