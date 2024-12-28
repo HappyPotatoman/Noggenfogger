@@ -1185,7 +1185,7 @@ moves_loop: // When in check search starts from here
 
       r -= ss->statScore / 14721;
 
-      Depth d = clamp(newDepth - r, 1, newDepth + (r < -1 && moveCount <= 5));
+      Depth d = clamp(newDepth - r, 1, newDepth + (r < -1 && (moveCount <= 5 || (depth > 5 && PvNode))));
 
       value = -search_NonPV(pos, ss+1, -(alpha+1), d, 1);
 
