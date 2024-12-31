@@ -31,22 +31,22 @@
 #define S(mg, eg) make_score(mg, eg)
 
 // Pawn penalties
-static const Score Backward      = S( 9, 22);
+static const Score Backward      = S( 9, 24);
 static const Score Doubled       = S(13, 51);
 static const Score DoubledEarly  = S(20,  7);
-static const Score Isolated      = S( 3, 15);
-static const Score WeakLever     = S( 4, 58);
-static const Score WeakUnopposed = S(13, 24);
+static const Score Isolated      = S( 5, 15);
+static const Score WeakLever     = S( 0, 56);
+static const Score WeakUnopposed = S(13, 27);
 
 // Bonus for blocked pawns at 5th or 6th rank
-static const Score BlockedPawn[2] = { S(-17, -6), S(-9, 2) };
+static const Score BlockedPawn[2] = { S(-11, -4), S(-3, 4) };
 
 static const Score BlockedStorm[8] = {
-  S(0, 0), S(0, 0), S(75, 78), S(-8, 16), S(-6, 10), S(-6, 6), S(0,2)
+  S(0, 0), S(0, 0), S(76, 78), S(-10, 15), S(-7, 10), S(-4, 6), S(-1,2)
 };
 
 // Connected pawn bonus
-static const int Connected[8] = { 0, 5, 7, 11, 23, 48, 87 };
+static const int Connected[8] = { 0, 7, 8, 12, 29, 48, 86 };
 
 #undef V
 #define V(mg) S(mg,0)
@@ -54,10 +54,10 @@ static const int Connected[8] = { 0, 5, 7, 11, 23, 48, 87 };
 // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind
 // our king.
 static const Score ShelterStrength[4][8] = {
-  { V( -5), V( 82), V( 92), V( 54), V( 36), V( 22), V(  28) },
-  { V(-44), V( 63), V( 33), V(-50), V(-30), V(-12), V( -62) },
-  { V(-11), V( 77), V( 22), V( -6), V( 31), V(  8), V( -45) },
-  { V(-39), V(-12), V(-29), V(-50), V(-43), V(-68), V(-164) }
+    { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
+    { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
+    { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
+    { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
 };
 
 // Danger of enemry pawns moving toward our king by [distance from edge][rank].
@@ -65,10 +65,10 @@ static const Score ShelterStrength[4][8] = {
 // pawn is behind our king. Note that UnblockedStorm[0][1-2] accommodates
 // opponent pawn on edge, likely blocked by our king.
 static const Score UnblockedStorm[4][8] = {
-  { V( 87), V(-288), V(-168), V( 96), V( 47), V( 44), V( 46) },
-  { V( 42), V( -25), V( 120), V( 45), V( 34), V( -9), V( 24) },
-  { V( -8), V(  51), V( 167), V( 35), V( -4), V(-16), V(-12) },
-  { V(-17), V( -13), V( 100), V(  4), V(  9), V(-16), V(-31) }
+    { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
+    { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
+    { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
+    { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
 };
 
 // KingOnFile[semi-open Us][semi-open Them] contains bonuses/penalties
@@ -161,7 +161,7 @@ INLINE Score pawn_evaluate(const Position *pos, PawnEntry *e, const Color Us)
     // Score this pawn
     if (support | phalanx) {
       int v =  Connected[r] * (2 + !!phalanx - !!opposed)
-             + 22 * popcount(support);
+             + 21 * popcount(support);
       score += make_score(v, v * (r - 2) / 4);
     }
 
@@ -181,8 +181,8 @@ INLINE Score pawn_evaluate(const Position *pos, PawnEntry *e, const Color Us)
       score -=  (doubled ? Doubled : 0)
               + (more_than_one(lever) ? WeakLever : 0);
 
-    if (blocked && r >= RANK_5)
-      score += BlockedPawn[r - RANK_5];
+    if (blocked && r >= RANK_4)
+      score += BlockedPawn[r - RANK_4];
   }
 
   return score;
