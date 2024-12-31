@@ -110,7 +110,6 @@ static Option optionsMap[] = {
   { "Slow Mover", OPT_TYPE_SPIN, 100, 10, 1000, NULL, NULL, 0, NULL },
   { "nodestime", OPT_TYPE_SPIN, 0, 0, 10000, NULL, NULL, 0, NULL },
   { "UCI_AnalyseMode", OPT_TYPE_CHECK, 0, 0, 0, NULL, NULL, 0, NULL },
-  { "UCI_Chess960", OPT_TYPE_CHECK, 0, 0, 0, NULL, NULL, 0, NULL },
 #ifdef NNUE
   { "EvalFile", OPT_TYPE_STRING, 0, 0, 0, DefaultEvalFile, NULL, 0, NULL },
 #ifndef NNUE_PURE
@@ -147,10 +146,6 @@ void options_init()
   optionsMap[OPT_LARGE_PAGES].type = OPT_TYPE_DISABLED;
 #endif
   optionsMap[OPT_SKILL_LEVEL].type = OPT_TYPE_DISABLED;
-  if (sizeof(size_t) < 8) {
-    optionsMap[OPT_SYZ_PROBE_LIMIT].def = 5;
-    optionsMap[OPT_SYZ_PROBE_LIMIT].maxVal = 5;
-  }
   for (Option *opt = optionsMap; opt->name != NULL; opt++) {
     if (opt->type == OPT_TYPE_DISABLED)
       continue;

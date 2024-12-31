@@ -166,7 +166,7 @@ void zob_init(void) {
 // This function is not very robust - make sure that input FENs are correct,
 // this is assumed to be the responsibility of the GUI.
 
-void pos_set(Position *pos, char *fen, int isChess960)
+void pos_set(Position *pos, char *fen)
 {
   unsigned char col, row, token;
   Square sq = SQ_A8;
@@ -246,7 +246,6 @@ void pos_set(Position *pos, char *fen, int isChess960)
   // handle also common incorrect FEN with fullmove = 0.
   pos->gamePly = max(2 * (pos->gamePly - 1), 0) + (stm() == BLACK);
 
-  pos->chess960 = isChess960;
   set_state(pos, st);
 
   assert(pos_is_ok(pos, &failed_step));
@@ -427,9 +426,7 @@ bool is_legal(const Position *pos, Move m)
       if (attackers_to(s) & pieces_c(!us))
         return false;
 
-    // For Chess960, verify that moving the castling rook does not discover
-    // some hidden checker, e.g. on SQ_A1 when castling rook is on SQ_B1.
-    return !is_chess960() || !(blockers_for_king(pos, us) & sq_bb(to_sq(m)));
+    return true;
   }
 
   // If the moving piece is a king, check whether the destination

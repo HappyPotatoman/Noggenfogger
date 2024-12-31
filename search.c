@@ -189,7 +189,7 @@ INLINE uint64_t perft_node(Position *pos, Depth depth, const bool Root)
     }
     if (Root) {
       char buf[16];
-      printf("%s: %"PRIu64"\n", uci_move(buf, m->move, is_chess960()), cnt);
+      printf("%s: %"PRIu64"\n", uci_move(buf, m->move), cnt);
     }
   }
   return nodes;
@@ -337,10 +337,10 @@ void mainthread_search(void)
                  -VALUE_INFINITE, VALUE_INFINITE);
 
   flockfile(stdout);
-  printf("bestmove %s", uci_move(buf, bestThread->rootMoves->move[0].pv[0], is_chess960()));
+  printf("bestmove %s", uci_move(buf, bestThread->rootMoves->move[0].pv[0]));
 
   if (bestThread->rootMoves->move[0].pvSize > 1 || extract_ponder_from_tt(&bestThread->rootMoves->move[0], pos)) 
-    printf(" ponder %s", uci_move(buf, bestThread->rootMoves->move[0].pv[1], is_chess960()));
+    printf(" ponder %s", uci_move(buf, bestThread->rootMoves->move[0].pv[1]));
 
 
   printf("\n");
@@ -984,7 +984,7 @@ moves_loop: // When in check search starts from here
       char buf[16];
       printf("info depth %d currmove %s currmovenumber %d\n",
              depth,
-             uci_move(buf, move, is_chess960()),
+             uci_move(buf, move),
              moveCount + pos->pvIdx);
       fflush(stdout);
     }
@@ -1830,7 +1830,7 @@ static void uci_print_pv(Position *pos, Depth depth, Value alpha, Value beta)
     // printf(" tbhits %"PRIu64" time %"PRIi64" pv", tbhits, elapsed);
 
     for (int idx = 0; idx < rm->move[i].pvSize; idx++)
-      printf(" %s", uci_move(buf, rm->move[i].pv[idx], is_chess960()));
+      printf(" %s", uci_move(buf, rm->move[i].pv[idx]));
     printf("\n");
   }
   fflush(stdout);
