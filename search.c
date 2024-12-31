@@ -342,6 +342,11 @@ void mainthread_search(void)
   if (bestThread->rootMoves->move[0].pvSize > 1 || extract_ponder_from_tt(&bestThread->rootMoves->move[0], pos)) 
     printf(" ponder %s", uci_move(buf, bestThread->rootMoves->move[0].pv[1], is_chess960()));
 
+  if (bestThread->rootMoves->move[1].pvSize > 1 || extract_ponder_from_tt(&bestThread->rootMoves->move[1], pos)) 
+    printf(" %s", uci_move(buf, bestThread->rootMoves->move[1].pv[1], is_chess960()));
+
+  if (bestThread->rootMoves->move[2].pvSize > 1 || extract_ponder_from_tt(&bestThread->rootMoves->move[2], pos)) 
+    printf(" %s", uci_move(buf, bestThread->rootMoves->move[2].pv[1], is_chess960()));
 
   printf("\n");
   fflush(stdout);
