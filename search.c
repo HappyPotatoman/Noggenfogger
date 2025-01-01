@@ -465,21 +465,11 @@ void thread_search(Position *pos)
       pos->pvIdx = pvIdx;
       if (pvIdx == pvLast) {
         pvFirst = pvLast;
-        for (pvLast++; pvLast < rm->size; pvLast++)
-          if (rm->move[pvLast].tbRank != rm->move[pvFirst].tbRank)
-            break;
-        pos->pvLast = pvLast;
+        pvLast = rm->size;
+        pos->pvLast = rm->size;
       }
 
       pos->selDepth = 0;
-
-      // Skip the search if we have a mate value from DTM tables.
-      if (abs(rm->move[pvIdx].tbRank) > 1000) {
-        bestValue = rm->move[pvIdx].score = rm->move[pvIdx].tbScore;
-        alpha = -VALUE_INFINITE;
-        beta = VALUE_INFINITE;
-        goto skip_search;
-      }
 
       // Reset aspiration window starting size
       if (pos->rootDepth >= 4) {
@@ -1702,7 +1692,7 @@ static NOINLINE Value qsearch_NonPV_false(Position *pos, Stack *ss, Value alpha,
   return qsearch_node(pos, ss, alpha, alpha+1, depth, NonPV, false);
 }
 
-#define rm_lt(m1,m2) ((m1).tbRank != (m2).tbRank ? (m1).tbRank < (m2).tbRank : (m1).score != (m2).score ? (m1).score < (m2).score : (m1).previousScore < (m2).previousScore)
+#define rm_lt(m1,m2) ((m1).score != (m2).score ? (m1).score < (m2).score : (m1).previousScore < (m2).previousScore)
 
 // stable_sort() sorts RootMoves from highest-scoring move to lowest-scoring
 // move while preserving order of equal elements.
@@ -2083,8 +2073,6 @@ void start_thinking(Position *root, bool ponderMode)
       rm->move[i].score = -VALUE_INFINITE;
       rm->move[i].previousScore = -VALUE_INFINITE;
       rm->move[i].selDepth = 0;
-      rm->move[i].tbRank = moves->move[i].tbRank;
-      rm->move[i].tbScore = moves->move[i].tbScore;
     }
     memcpy(pos, root, offsetof(Position, moveList));
     // Copy enough of the root State buffer.
