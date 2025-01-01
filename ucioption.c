@@ -46,7 +46,7 @@ static void on_clear_hash(Option *opt)
     search_clear();
 }
 
-static void on_hash_size(Option *opt) //in kB
+static void on_hash_size(Option *opt) //in MB
 {
   delayedSettings.ttSize = opt->value;
 }
@@ -101,7 +101,7 @@ static Option optionsMap[] = {
   { "Analysis Contempt", OPT_TYPE_COMBO, 0, 0, 0,
     "Off var Off var White var Black", NULL, 0, NULL },
   { "Threads", OPT_TYPE_SPIN, 1, 1, MAX_THREADS, NULL, on_threads, 0, NULL },
-  { "Hash", OPT_TYPE_SPIN, 16, 16, MAXHASHMB, NULL, on_hash_size, 0, NULL }, //This is in kB
+  { "Hash", OPT_TYPE_SPIN, 16, 1, MAXHASHMB, NULL, on_hash_size, 0, NULL }, //This is in kB
   { "Clear Hash", OPT_TYPE_BUTTON, 0, 0, 0, NULL, on_clear_hash, 0, NULL },
   { "Ponder", OPT_TYPE_CHECK, 0, 0, 0, NULL, NULL, 0, NULL },
   { "MultiPV", OPT_TYPE_SPIN, 1, 1, 500, NULL, NULL, 0, NULL },

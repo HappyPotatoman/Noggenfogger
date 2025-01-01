@@ -47,9 +47,9 @@ void tt_free(void)
 
 // tt_allocate() allocates the transposition table, measured in megabytes.
 
-void tt_allocate(size_t kbSize) //reduce the size 
+void tt_allocate(size_t mbSize)
 {
-  TT.clusterCount = kbSize * 1024 / sizeof(Cluster);
+  TT.clusterCount = mbSize * 1024 * 1024 / sizeof(Cluster);
   size_t size = TT.clusterCount * sizeof(Cluster);
 
   TT.table = NULL;
@@ -76,10 +76,9 @@ void tt_allocate(size_t kbSize) //reduce the size
 
 failed:
   fprintf(stderr, "Failed to allocate %"PRIu64"MB for "
-                  "transposition table.\n", (uint64_t)kbSize);
+                  "transposition table.\n", (uint64_t)mbSize);
   exit(EXIT_FAILURE);
 }
-
 
 // tt_clear() initialises the entire transposition table to zero.
 
