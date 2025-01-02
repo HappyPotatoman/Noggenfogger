@@ -124,7 +124,6 @@ static void update_capture_stats(const Position *pos, Move move, Move *captures,
     int captureCnt, int bonus);
 static void check_time(void);
 static void stable_sort(RootMove *rm, int num);
-static void uci_print_pv(Position *pos, Depth depth, Value alpha, Value beta);
 static int extract_ponder_from_tt(RootMove *rm, Position *pos);
 
 // search_init() is called during startup to initialize various lookup tables
@@ -337,34 +336,13 @@ void mainthread_search(void)
   }
 
   mainThread.previousScore = bestThread->rootMoves->move[0].score;
-  char fen_buf[128];  // Buffer to hold the FEN string
-  pos_fen(pos, fen_buf);
-
-  // Send new PV when needed
-  if (bestThread != pos)
-    uci_print_pv(bestThread, bestThread->completedDepth,
-                 -VALUE_INFINITE, VALUE_INFINITE);
 
   flockfile(stdout);
   printf("bestmove %s", uci_move(buf, bestThread->rootMoves->move[0].pv[0], is_chess960()));
 
   if (bestThread->rootMoves->move[0].pvSize > 1 || extract_ponder_from_tt(&bestThread->rootMoves->move[0], pos)) {
       printf(" ponder %s", uci_move(buf, bestThread->rootMoves->move[0].pv[1], is_chess960()));
-      Position temp_pos = *pos;  // Make a copy of the current position
-      // Apply the best move to the temporary position
-      Stack dummy_stack = {0};
-      do_move(&temp_pos, bestThread->rootMoves->move[0].pv[0], gives_check(&temp_pos, &dummy_stack, bestThread->rootMoves->move[0].pv[0]));
-
-      // Apply the ponder move if available
-      if (bestThread->rootMoves->move[0].pvSize > 1) {
-          do_move(&temp_pos, bestThread->rootMoves->move[0].pv[1], gives_check(&temp_pos, &dummy_stack, bestThread->rootMoves->move[0].pv[1]));
-      }
-
-      // Generate FEN from the updated position
-      pos_fen(&temp_pos, fen_buf);
-      printf(" fen %s\n", fen_buf);
   }
-
 
   printf("\n");
   fflush(stdout);
@@ -506,14 +484,6 @@ void thread_search(Position *pos)
         if (Threads.stop)
           break;
 
-        // When failing high/low give some update (without cluttering
-        // the UI) before a re-search.
-        if (   pos->threadIdx == 0
-            && multiPV == 1
-            && (bestValue <= alpha || bestValue >= beta)
-            && time_elapsed() > 3000)
-          uci_print_pv(pos, pos->rootDepth, alpha, beta);
-
         // In case of failing low/high increase aspiration window and
         // re-search, otherwise exit the loop.
         if (bestValue <= alpha) {
@@ -536,11 +506,6 @@ void thread_search(Position *pos)
 
       // Sort the PV lines searched so far and update the GUI
       stable_sort(&rm->move[pvFirst], pvIdx - pvFirst + 1);
-
-skip_search:
-      if (    pos->threadIdx == 0
-          && (Threads.stop || pvIdx + 1 == multiPV || time_elapsed() > 3000))
-        uci_print_pv(pos, pos->rootDepth, alpha, beta);
     }
 
     if (!Threads.stop)
@@ -1877,70 +1842,6 @@ static void check_time(void)
       || (Limits.nodes && threads_nodes_searched() >= Limits.nodes))
         Threads.stop = 1;
 }
-
-// uci_print_pv() prints PV information according to the UCI protocol.
-// UCI requires that all (if any) unsearched PV lines are sent with a
-// previous search score.
-
-static void uci_print_pv(Position *pos, Depth depth, Value alpha, Value beta)
-{
-  TimePoint elapsed = time_elapsed() + 1;
-  RootMoves *rm = pos->rootMoves;
-  int pvIdx = pos->pvIdx;
-  int multiPV = min(option_value(OPT_MULTI_PV), rm->size);
-  uint64_t nodes_searched = threads_nodes_searched();
-  // uint64_t tbhits = threads_tb_hits();
-  char buf[16];
-
-  flockfile(stdout);
-  for (int i = 0; i < multiPV; i++) {
-    bool updated = rm->move[i].score != -VALUE_INFINITE;
-
-    if (depth == 1 && !updated && i > 0)
-      continue;
-
-    Depth d = updated ? depth : max(1, depth - 1);
-    Value v = updated ? rm->move[i].score : rm->move[i].previousScore;
-
-    if (v == -VALUE_INFINITE)
-      v = VALUE_ZERO;
-
-    // bool tb = TB_RootInTB && abs(v) < VALUE_MATE_IN_MAX_PLY;
-    // if (tb)
-    //   v = rm->move[i].tbScore;
-
-    // // An incomplete mate PV may be caused by cutoffs in qsearch() and
-    // // by TB cutoffs. We try to complete the mate PV if we may be in the
-    // // latter case.
-    // if (   abs(v) > VALUE_MATE - MAX_MATE_PLY
-    //     && rm->move[i].pvSize < VALUE_MATE - abs(v)
-    //     && TB_MaxCardinalityDTM > 0)
-    //   TB_expand_mate(pos, &rm->move[i]);
-
-    printf("info depth %d seldepth %d multipv %d score %s",
-           d, rm->move[i].selDepth + 1, i + 1,
-           uci_value(buf, v));
-
-    // if (!tb && i == pvIdx)
-    if (i == pvIdx)
-      printf("%s", v >= beta ? " lowerbound" : v <= alpha ? " upperbound" : "");
-
-    printf(" nodes %"PRIu64" nps %"PRIu64, nodes_searched,
-                              nodes_searched * 1000 / elapsed);
-
-    if (elapsed > 1000)
-      printf(" hashfull %d", tt_hashfull());
-
-    // printf(" tbhits %"PRIu64" time %"PRIi64" pv", tbhits, elapsed);
-
-    for (int idx = 0; idx < rm->move[i].pvSize; idx++)
-      printf(" %s", uci_move(buf, rm->move[i].pv[idx], is_chess960()));
-    printf("\n");
-  }
-  fflush(stdout);
-  funlockfile(stdout);
-}
-
 
 // extract_ponder_from_tt() is called in case we have no ponder move
 // before exiting the search, for instance, in case we stop the search
