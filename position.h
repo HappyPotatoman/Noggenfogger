@@ -168,7 +168,7 @@ struct Position {
   Color nmpColor;
   Depth rootDepth;
   Depth completedDepth;
-  Score contempt;
+  Score trend;
   int failedHighCnt;
 
   // Pointers to thread-specific tables.
