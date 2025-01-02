@@ -1046,7 +1046,7 @@ moves_loop: // When in check search starts from here
       if (value < singularBeta) {
         extension = 1;
         singularQuietLMR = !ttCapture;
-        if (!PvNode && value < singularBeta - 93)
+        if (!PvNode && value < singularBeta - 93 && ss->doubleExtensions < 3)
           extension = 2;
       }
 
@@ -1089,6 +1089,7 @@ moves_loop: // When in check search starts from here
 
     // Add extension to new depth
     newDepth += extension;
+    ss->doubleExtensions = (ss-1)->doubleExtensions + (extension == 2);
 
     // Speculative prefetch as early as possible
     prefetch(tt_first_entry(key_after(pos, move)));
