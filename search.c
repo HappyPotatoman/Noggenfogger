@@ -1002,7 +1002,7 @@ moves_loop: // When in check search starts from here
       } else {
 
         // Countermoves based pruning
-        if (   lmrDepth < 4
+        if (   lmrDepth < 3
             && (*cmh )[movedPiece][to_sq(move)] < (depth == 1 ? 0 : -stat_bonus(depth-1))
             && (*fmh )[movedPiece][to_sq(move)] < (depth == 1 ? 0 : -stat_bonus(depth-1)))
           continue;
