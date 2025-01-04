@@ -53,7 +53,7 @@ OBJS = bitbase.o bitboard.o endgame.o evaluate.o main.o \
 # nnue = yes/no       --- -DNNUE           --- Enable/Disable NNUE
 # pure = yes/no       --- -DNNUE_PURE      --- Enable/Disable NNUE pure only
 # debug = yes/no      --- -DNDEBUG         --- Enable/Disable debug mode
-# optimize = yes/no   --- (-O2/-fast etc.) --- Enable/Disable optimizations
+# optimize = yes/no   --- (-O3/-fast etc.) --- Enable/Disable optimizations
 # arch = (name)       --- (-arch)          --- Target architecture
 # numa = yes/no       --- -DNUMA           --- Enable NUMA support
 # lto = yes/no        --- -flto            --- Enable link-time optimization
@@ -575,7 +575,7 @@ endif
 ### 3.3 Optimization
 ifeq ($(optimize),yes)
 
-	CFLAGS += -O2
+	CFLAGS += -O3
 
 	ifeq ($(comp),$(filter $(comp),gcc mingw))
 		ifeq ($(extra),yes)
