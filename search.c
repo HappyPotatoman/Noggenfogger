@@ -640,7 +640,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
   // Check for the available remaining time
   if (load_rlx(pos->resetCalls)) {
     store_rlx(pos->resetCalls, false);
-    pos->callsCnt = Limits.nodes ? min(1024, Limits.nodes / 1024) : 1024;
+    pos->callsCnt = 1024;
   }
   if (--pos->callsCnt <= 0) {
     for (int idx = 0; idx < Threads.numThreads; idx++)
@@ -1753,12 +1753,13 @@ static void check_time(void)
   TimePoint elapsed = time_elapsed();
 
   // An engine may not stop pondering until told so by the GUI
-  if (Threads.ponder)
-    return;
+  // if (Threads.ponder)
+  //   return;
 
   if (   (use_time_management() && elapsed > time_maximum() - 10)
-      || (Limits.movetime && elapsed >= Limits.movetime)
-      || (Limits.nodes && threads_nodes_searched() >= Limits.nodes))
+      // || (Limits.movetime && elapsed >= Limits.movetime)
+      // || (Limits.nodes && threads_nodes_searched() >= Limits.nodes)
+    )
         Threads.stop = 1;
 }
 
