@@ -790,6 +790,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
 
   // Step 7. Futility pruning: child node
   if (   !PvNode
+      &&  depth < 9
       &&  eval - futility_margin(depth, improving) >= beta
       &&  eval < VALUE_KNOWN_WIN)  // Do not return unproven wins
     return eval; // - futility_margin(depth); (do not do the right thing)
@@ -1008,7 +1009,8 @@ moves_loop: // When in check search starts from here
           continue;
 
         // Futility pruning: parent node
-        if (   !inCheck
+        if (   lmrDepth < 7
+            && !inCheck
             && ss->staticEval + 174 + 157 * lmrDepth <= alpha)
           continue;
 
