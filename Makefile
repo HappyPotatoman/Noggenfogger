@@ -783,6 +783,12 @@ ifeq ($(arch),armv7)
 endif
 
 
+### 3.10 Use preoptimized profdata if available
+PROFDATA = cfish.profdata
+ifneq ($(wildcard $(PROFDATA)),)
+    CFLAGS += -fprofile-instr-use=$(PROFDATA)
+endif
+
 ### ==========================================================================
 ### Section 4. Public targets
 ### ==========================================================================
