@@ -1813,17 +1813,17 @@ void start_thinking(Position *root, bool ponderMode)
   ExtMove list[MAX_MOVES];
   ExtMove *end = generate_legal(root, list);
 
-  // Implement searchmoves option.
-  if (Limits.numSearchmoves) {
-    ExtMove *p = list;
-    for (ExtMove *m = p; m < end; m++)
-      for (int i = 0; i < Limits.numSearchmoves; i++)
-        if (m->move == Limits.searchmoves[i]) {
-          (p++)->move = m->move;
-          break;
-        }
-    end = p;
-  }
+  // // Implement searchmoves option.
+  // if (Limits.numSearchmoves) {
+  //   ExtMove *p = list;
+  //   for (ExtMove *m = p; m < end; m++)
+  //     for (int i = 0; i < Limits.numSearchmoves; i++)
+  //       if (m->move == Limits.searchmoves[i]) {
+  //         (p++)->move = m->move;
+  //         break;
+  //       }
+  //   end = p;
+  // }
 
   RootMoves *moves = Threads.pos[0]->rootMoves;
   moves->size = end - list;

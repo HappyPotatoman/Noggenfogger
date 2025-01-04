@@ -61,10 +61,8 @@ struct LimitsType {
   int movetime;
   int mate;
   bool infinite;
-  uint64_t nodes;
+  // uint64_t nodes;
   TimePoint startTime;
-  int numSearchmoves;
-  Move searchmoves[MAX_MOVES];
 };
 
 typedef struct LimitsType LimitsType;

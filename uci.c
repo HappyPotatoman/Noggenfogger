@@ -168,10 +168,7 @@ static void go(Position *pos, char *str)
   Limits.startTime = now(); // As early as possible!
 
   for (token = strtok(str, " \t"); token; token = strtok(NULL, " \t")) {
-    if (strcmp(token, "searchmoves") == 0)
-      while ((token = strtok(NULL, " \t")))
-        Limits.searchmoves[Limits.numSearchmoves++] = uci_to_move(pos, token);
-    else if (strcmp(token, "wtime") == 0)
+    if (strcmp(token, "wtime") == 0)
       Limits.time[WHITE] = atoi(strtok(NULL, " \t"));
     else if (strcmp(token, "btime") == 0)
       Limits.time[BLACK] = atoi(strtok(NULL, " \t"));
@@ -183,8 +180,8 @@ static void go(Position *pos, char *str)
       Limits.movestogo = atoi(strtok(NULL, " \t"));
     else if (strcmp(token, "depth") == 0)
       Limits.depth = atoi(strtok(NULL, " \t"));
-    else if (strcmp(token, "nodes") == 0)
-      Limits.nodes = strtoull(strtok(NULL, " \t"), NULL, 10);
+    // else if (strcmp(token, "nodes") == 0)
+    //   Limits.nodes = strtoull(strtok(NULL, " \t"), NULL, 10);
     else if (strcmp(token, "movetime") == 0)
       Limits.movetime = atoi(strtok(NULL, " \t"));
     else if (strcmp(token, "mate") == 0)
