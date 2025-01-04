@@ -30,6 +30,8 @@
 #include "timeman.h"
 #include "uci.h"
 
+extern void benchmark(Position *pos, char *str);
+
 // FEN string of the initial position, normal chess
 static const char StartFEN[] =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -194,6 +196,7 @@ static void go(Position *pos, char *str)
       char str_buf[64];
       sprintf(str_buf, "%d %d %d current perft", option_value(OPT_HASH),
                     option_value(OPT_THREADS), atoi(strtok(NULL, " \t")));
+      benchmark(&pos, str_buf);
       return;
     }
   }
@@ -328,6 +331,9 @@ void uci_loop(int argc, char **argv)
     else if (strcmp(token, "go") == 0)        go(&pos, str);
     else if (strcmp(token, "position") == 0)  position(&pos, str);
     else if (strcmp(token, "setoption") == 0) setoption(str);
+
+    // Additional custom non-UCI commands, useful for debugging
+    else if (strcmp(token, "bench") == 0)     benchmark(&pos, str);
 
   } while (argc == 1 && strcmp(token, "quit") != 0);
 
