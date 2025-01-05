@@ -575,7 +575,16 @@ endif
 ### 3.3 Optimization
 ifeq ($(optimize),yes)
 
-	CFLAGS += -O2
+	ifeq ($(OPT_LEVEL),)
+		OPT_LEVEL=O3
+	else ifeq ($(OPT_LEVEL),O2)
+		OPT_LEVEL=O2
+	else ifeq ($(OPT_LEVEL),Os)
+		OPT_LEVEL=Os
+	else ifeq ($(OPT_LEVEL),O3)
+		OPT_LEVEL=O3
+	endif
+	CFLAGS += -$(OPT_LEVEL)
 
 	ifeq ($(comp),$(filter $(comp),gcc mingw))
 		ifeq ($(extra),yes)
@@ -591,10 +600,6 @@ ifeq ($(optimize),yes)
 		ifeq ($(KERNEL),Darwin)
 			CFLAGS += -mdynamic-no-pic
 		endif
-	endif
-
-	ifeq ($(comp),clang)
-		CFLAGS += -fexperimental-new-pass-manager
 	endif
 endif
 
