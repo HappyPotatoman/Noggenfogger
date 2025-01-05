@@ -145,7 +145,6 @@ struct Position {
   Bitboard byTypeBB[7]; // no reason to allocate 8 here
   Bitboard byColorBB[2];
   Color sideToMove;
-  uint8_t chess960;
   uint8_t board[64];
   uint8_t pieceCount[16];
   uint8_t castlingRightsMask[64];
@@ -197,7 +196,7 @@ struct Position {
 };
 
 // FEN string input/output
-void pos_set(Position *pos, char *fen, int isChess960);
+void pos_set(Position *pos, char *fen);
 
 //PURE Bitboard attackers_to_occ(const Position *pos, Square s, Bitboard occupied);
 PURE Bitboard slider_blockers(const Position *pos, Bitboard sliders, Square s,
@@ -270,7 +269,6 @@ PURE bool has_game_cycle(const Position *pos, int ply);
 // Other properties of the position
 #define stm() (pos->sideToMove)
 #define game_ply() (pos->gamePly)
-#define is_chess960() (pos->chess960)
 #define nodes_searched() (pos->nodes)
 #define rule50_count() (pos->st->rule50)
 #define psq_score() (pos->st->psq)

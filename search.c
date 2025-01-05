@@ -188,7 +188,7 @@ INLINE uint64_t perft_node(Position *pos, Depth depth, const bool Root)
     }
     if (Root) {
       char buf[16];
-      printf("%s: %"PRIu64"\n", uci_move(buf, m->move, is_chess960()), cnt);
+      printf("%s: %"PRIu64"\n", uci_move(buf, m->move), cnt);
     }
   }
   return nodes;
@@ -328,10 +328,10 @@ void mainthread_search(void)
   mainThread.previousScore = bestThread->rootMoves->move[0].score;
 
   flockfile(stdout);
-  printf("bestmove %s", uci_move(buf, bestThread->rootMoves->move[0].pv[0], is_chess960()));
+  printf("bestmove %s", uci_move(buf, bestThread->rootMoves->move[0].pv[0]));
 
   if (bestThread->rootMoves->move[0].pvSize > 1 || extract_ponder_from_tt(&bestThread->rootMoves->move[0], pos)) 
-    printf(" ponder %s", uci_move(buf, bestThread->rootMoves->move[0].pv[1], is_chess960()));
+    printf(" ponder %s", uci_move(buf, bestThread->rootMoves->move[0].pv[1]));
 
 
   printf("\n");

@@ -315,18 +315,6 @@ INLINE Score evaluate_pieces(const Position *pos, EvalInfo *ei, Score *mobility,
         // squares
         if (more_than_one(attacks_bb_bishop(s, pieces_p(PAWN)) & Center))
           score += LongDiagonalBishop;
-
-        // An important Chess960 pattern: a cornered bishop blocked by a
-        // friendly pawn diagonally in front of it is a very serious problem,
-        // especially when that pawn is also blocked.
-        if (   is_chess960()
-            && (s == relative_square(Us, SQ_A1) || s == relative_square(Us, SQ_H1)))
-        {
-          Square d = pawn_push(Us) + (file_of(s) == FILE_A ? EAST : WEST);
-          if (piece_on(s + d) == make_piece(Us, PAWN))
-            score -= !is_empty(s + d + pawn_push(Us)) ? CorneredBishop * 4
-                                                      : CorneredBishop * 3;
-        }
       }
     }
 
@@ -870,7 +858,7 @@ static Value fix_FRC(const Position *pos)
 
 #define adjusted_NNUE() \
   (nnue_evaluate(pos) * (580 + mat / 32 - 4 * rule50_count()) / 1024 \
-   + Time.tempoNNUE + (is_chess960() ? fix_FRC(pos) : 0))
+   + Time.tempoNNUE )
 
 #endif
 

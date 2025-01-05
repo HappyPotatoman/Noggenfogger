@@ -48,7 +48,6 @@ enum {
   OPT_SLOW_MOVER,
   OPT_NODES_TIME,
   OPT_ANALYSE_MODE,
-  OPT_CHESS960,
   OPT_SYZ_PATH,
   OPT_SYZ_PROBE_DEPTH,
   OPT_SYZ_50_MOVE,
@@ -93,7 +92,7 @@ void position(Position *pos, char *str);
 void uci_loop(int argc, char* argv[]);
 char *uci_value(char *str, Value v);
 char *uci_square(char *str, Square s);
-char *uci_move(char *str, Move m, int chess960);
+char *uci_move(char *str, Move m);
 void print_pv(Position *pos, Depth depth, Value alpha, Value beta);
 Move uci_to_move(const Position *pos, char *str);
 
