@@ -120,6 +120,7 @@ static void update_capture_stats(const Position *pos, Move move, Move *captures,
 static void check_time(void);
 static void stable_sort(RootMove *rm, int num);
 static int extract_ponder_from_tt(RootMove *rm, Position *pos);
+static int extract_cont_from_tt(RootMove *rm, Position *pos);
 
 // search_init() is called during startup to initialize various lookup tables
 
@@ -1796,6 +1797,46 @@ static int extract_ponder_from_tt(RootMove *rm, Position *pos)
 
   undo_move(pos, rm->pv[0]);
   return rm->pvSize > 1;
+}
+
+
+// extract_cont_from_tt() is called in case we have no continuation move
+// the move after the ponder move of the PV before exiting the search, 
+// for instance, in case we stop the search during a fail high at root.
+//  We try hard to have a cont move to return to the GUI, otherwise in
+// case of 'cont on' we have nothing to think on. This can be considered
+// a hack, because I couldn't get normal pondering to work without clearing
+// the TT on pondermiss.
+
+static int extract_cont_from_tt(RootMove *rm, Position *pos)
+{
+  bool ttHit;
+
+  assert(rm->pvSize == 2);
+
+  if (!rm->pv[0])
+    return 0;
+  if (!rm->pv[1])
+    return 0;
+
+  do_move(pos, rm->pv[0], gives_check(pos, pos->st, rm->pv[0]));
+  do_move(pos, rm->pv[1], gives_check(pos, pos->st, rm->pv[1]));
+  TTEntry *tte = tt_probe(key(), &ttHit);
+
+  if (ttHit) {
+    Move m = tte_move(tte); // Local copy to be SMP safe
+    ExtMove list[MAX_MOVES];
+    ExtMove *last = generate_legal(pos, list);
+    for (ExtMove *p = list; p < last; p++)
+      if (p->move == m) {
+        rm->pv[rm->pvSize++] = m;
+        break;
+      }
+  }
+
+  undo_move(pos, rm->pv[1]);
+  undo_move(pos, rm->pv[0]);
+  return rm->pvSize > 2;
 }
 
 // start_thinking() wakes up the main thread to start a new search,
