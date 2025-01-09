@@ -596,9 +596,9 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
 
   // Check if we have an upcoming move which draws by repetition, or if the
   // opponent had an alternative move earlier to this position.
-  if (   pos->st->pliesFromNull >= 3
+  if (   !rootNode
+      && pos->st->pliesFromNull >= 3
       && alpha < VALUE_DRAW
-      && !rootNode
       && has_game_cycle(pos, ss->ply))
   {
     alpha = value_draw(pos);
@@ -1030,9 +1030,9 @@ moves_loop: // When in check search starts from here
     // that move is singular and should be extended. To verify this we do a
     // reduced search on all the other moves but the ttMove and if the
     // result is lower than ttValue minus a margin, then we extend the ttMove.
-    if (    depth >= 7
+    if (    !rootNode 
+        &&  depth >= 7
         &&  move == ttMove
-        && !rootNode
         && !excludedMove // No recursive singular search
      /* &&  ttValue != VALUE_NONE implicit in the next condition */
         &&  abs(ttValue) < VALUE_KNOWN_WIN
