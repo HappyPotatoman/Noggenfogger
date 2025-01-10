@@ -229,8 +229,8 @@ void benchmark(Position *current, char *str)
 
   fprintf(stderr, "\n==========================="
                   "\nTotal time (ms) : %" PRIu64
-                  "\nNodes searched  : %" PRIu64
-                  "\nNodes/second    : %" PRIu64 "\n",
+                  "\nnodes  : %" PRIu64
+                  "\nnps    : %" PRIu64 "\n",
                   elapsed, nodes, 1000 * nodes / elapsed);
 
   if (fens != Defaults) {
