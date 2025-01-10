@@ -60,10 +60,9 @@ INLINE ExtMove *generate_pawn_moves(const Position *pos, ExtMove *list,
   const int      Right    = Us == WHITE ? NORTH_EAST : SOUTH_WEST;
   const int      Left     = Us == WHITE ? NORTH_WEST : SOUTH_EAST;
 
-  const Bitboard emptySquares =  Type == QUIETS || Type == QUIET_CHECKS
-                               ? target : ~pieces();
+  const Bitboard emptySquares = ~pieces();
   const Bitboard enemies =  Type == EVASIONS ? checkers()
-                          : Type == CAPTURES ? target : pieces_c(Them);
+                                             : pieces_c(Them);
 
   Bitboard pawnsOn7    = pieces_cp(Us, PAWN) &  TRank7BB;
   Bitboard pawnsNotOn7 = pieces_cp(Us, PAWN) & ~TRank7BB;
