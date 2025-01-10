@@ -1,6 +1,8 @@
 name: OpenBench Build
 on:
   push:
+    branches: 
+      - 55* 
   workflow_dispatch:
 
 jobs:
