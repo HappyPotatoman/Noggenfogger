@@ -42,60 +42,6 @@ pthread_mutex_t ioMutex = PTHREAD_MUTEX_INITIALIZER;
 HANDLE ioMutex;
 #endif
 
-static char months[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
-static char date[] = __DATE__;
-
-// print engine_info() prints the full name of the current Stockfish version.
-// This will be either "Stockfish <Tag> DD-MM-YY" (where DD-MM-YY is the
-// date when the program was compiled) or "Stockfish <Version>", depending
-// on whether Version is empty.
-
-void print_engine_info(bool to_uci)
-{
-  char my_date[64];
-
-  printf("Cfish %s", Version);
-
-  if (strlen(Version) == 0) {
-    int day, month, year;
-
-    strcpy(my_date, date);
-    char *str = strtok(my_date, " "); // month
-    for (month = 1; strncmp(str, &months[3 * month - 3], 3) != 0; month++);
-    str = strtok(NULL, " "); // day
-    day = atoi(str);
-    str = strtok(NULL, " "); // year
-    year = atoi(str);
-
-    printf("%02d%02d%02d", day, month, year % 100);
-  }
-
-  printf(
-#ifdef IS_64BIT
-         " 64"
-#endif
-#ifdef USE_AVX512
-         " AVX512"
-#elif USE_PEXT
-         " BMI2"
-#elif USE_AVX2
-         " AVX2"
-#elif USE_NEON
-         " NEON"
-#elif USE_POPCNT
-         " POPCNT"
-#endif
-#ifdef USE_VNNI
-         "-VNNI"
-#endif
-#ifdef NUMA
-         " NUMA"
-#endif
-         "%s\n", to_uci ? "\nid author The Stockfish developers"
-                      : " by Syzygy based on Stockfish");
-  fflush(stdout);
-}
-
 // print compiler_info() prints a string trying to describe the compiler
 
 
