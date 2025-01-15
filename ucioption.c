@@ -91,7 +91,7 @@ static void on_large_pages(Option *opt)
 // }
 
 #ifdef IS_64BIT
-#define MAXHASHMB 33554432
+#define MAXHASHKB 33554432
 #else
 #define MAXHASHKB 2048
 #endif
@@ -101,7 +101,7 @@ static Option optionsMap[] = {
   { "Analysis Contempt", OPT_TYPE_COMBO, 0, 0, 0,
     "Off var Off var White var Black", NULL, 0, NULL },
   { "Threads", OPT_TYPE_SPIN, 1, 1, MAX_THREADS, NULL, on_threads, 0, NULL },
-  { "Hash", OPT_TYPE_SPIN, 512, 128, MAXHASHKB, NULL, on_hash_size, 0, NULL }, //This is in kB
+  { "Hash", OPT_TYPE_SPIN, 64, 64, MAXHASHKB, NULL, on_hash_size, 0, NULL }, //This is in kB
   { "Clear Hash", OPT_TYPE_BUTTON, 0, 0, 0, NULL, on_clear_hash, 0, NULL },
   { "Ponder", OPT_TYPE_CHECK, 0, 0, 0, NULL, NULL, 0, NULL },
   { "MultiPV", OPT_TYPE_SPIN, 1, 1, 500, NULL, NULL, 0, NULL },
