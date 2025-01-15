@@ -34,9 +34,6 @@
 #include "tt.h"
 #include "uci.h"
 
-#define load_rlx(x) atomic_load_explicit(&(x), memory_order_relaxed)
-#define store_rlx(x,y) atomic_store_explicit(&(x), y, memory_order_relaxed)
-
 LimitsType Limits;
 
 static int base_ct;
@@ -641,13 +638,12 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
   maxValue = VALUE_INFINITE;
 
   // Check for the available remaining time
-  if (load_rlx(pos->resetCalls)) {
-    store_rlx(pos->resetCalls, false);
+  if (pos->resetCalls) {
+    pos->resetCalls = false;
     pos->callsCnt = 1024;
   }
   if (--pos->callsCnt <= 0) {
-    for (int idx = 0; idx < Threads.numThreads; idx++)
-      store_rlx(Threads.pos[idx]->resetCalls, true);
+    Threads.pos[0]->resetCalls = true;
 
     check_time();
   }
@@ -658,7 +654,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
 
   if (!rootNode) {
     // Step 2. Check for aborted search and immediate draw
-    if (load_rlx(Threads.stop) || is_draw(pos) || ss->ply >= MAX_PLY)
+    if (Threads.stop || is_draw(pos) || ss->ply >= MAX_PLY)
       return  ss->ply >= MAX_PLY && !inCheck ? evaluate(pos)
                                              : value_draw(pos);
 
@@ -1213,7 +1209,7 @@ moves_loop: // When in check search starts from here
     // Finished searching the move. If a stop occurred, the return value of
     // the search cannot be trusted, and we return immediately without
     // updating best move, PV and TT.
-    if (load_rlx(Threads.stop))
+    if (Threads.stop)
       return 0;
 
     if (rootNode) {

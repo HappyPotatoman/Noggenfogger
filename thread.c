@@ -92,7 +92,7 @@ static THREAD_FUNC thread_init(void *arg)
   pos->threadIdx = idx;
   pos->counterMoveHistory = cmhTables[t];
 
-  atomic_store(&pos->resetCalls, false);
+  pos->resetCalls = false;
   pos->selDepth = pos->callsCnt = 0;
 
 #ifndef _WIN32  // linux
@@ -227,13 +227,13 @@ void thread_wait_until_sleeping(Position *pos)
 
 // thread_wait() waits on sleep condition until condition is true.
 
-void thread_wait(Position *pos, atomic_bool *condition)
+void thread_wait(Position *pos, bool *condition)
 {
 #ifndef _WIN32
 
   pthread_mutex_lock(&pos->mutex);
 
-  while (!atomic_load(condition))
+  while (!condition)
     pthread_cond_wait(&pos->sleepCondition, &pos->mutex);
 
   pthread_mutex_unlock(&pos->mutex);

@@ -53,7 +53,7 @@ enum {
 void thread_search(Position *pos);
 void thread_wake_up(Position *pos, int action);
 void thread_wait_until_sleeping(Position *pos);
-void thread_wait(Position *pos, atomic_bool *b);
+void thread_wait(Position *pos, bool *b);
 
 
 // MainThread struct seems to exist mostly for easy move.
@@ -86,7 +86,7 @@ struct ThreadPool {
   HANDLE event;
 #endif
   bool searching, sleeping, stopOnPonderhit;
-  atomic_bool ponder, stop, increaseDepth;
+  bool ponder, stop, increaseDepth;
   LOCK_T lock;
 };
 
