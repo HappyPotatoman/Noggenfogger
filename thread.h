@@ -21,7 +21,6 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-#include <stdatomic.h>
 #ifndef _WIN32
 #include <pthread.h>
 #else
