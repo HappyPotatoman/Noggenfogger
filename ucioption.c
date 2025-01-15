@@ -93,7 +93,7 @@ static void on_large_pages(Option *opt)
 #ifdef IS_64BIT
 #define MAXHASHMB 33554432
 #else
-#define MAXHASHMB 2048
+#define MAXHASHKB 2048
 #endif
 
 static Option optionsMap[] = {
@@ -101,7 +101,7 @@ static Option optionsMap[] = {
   { "Analysis Contempt", OPT_TYPE_COMBO, 0, 0, 0,
     "Off var Off var White var Black", NULL, 0, NULL },
   { "Threads", OPT_TYPE_SPIN, 1, 1, MAX_THREADS, NULL, on_threads, 0, NULL },
-  { "Hash", OPT_TYPE_SPIN, 1, 1, MAXHASHMB, NULL, on_hash_size, 0, NULL }, //This is in kB
+  { "Hash", OPT_TYPE_SPIN, 512, 128, MAXHASHKB, NULL, on_hash_size, 0, NULL }, //This is in kB
   { "Clear Hash", OPT_TYPE_BUTTON, 0, 0, 0, NULL, on_clear_hash, 0, NULL },
   { "Ponder", OPT_TYPE_CHECK, 0, 0, 0, NULL, NULL, 0, NULL },
   { "MultiPV", OPT_TYPE_SPIN, 1, 1, 500, NULL, NULL, 0, NULL },
@@ -188,33 +188,6 @@ void options_free(void)
 static const char *optTypeStr[] = {
   "check", "spin", "button", "string", "combo"
 };
-
-// print_options() prints all options in the format required by the
-// UCI protocol.
-
-void print_options(void)
-{
-  for (Option *opt = optionsMap; opt->name != NULL; opt++) {
-    if (opt->type == OPT_TYPE_DISABLED)
-      continue;
-    printf("option name %s type %s", opt->name, optTypeStr[opt->type]);
-    switch (opt->type) {
-    case OPT_TYPE_CHECK:
-      printf(" default %s", opt->def ? "true" : "false");
-      break;
-    case OPT_TYPE_SPIN:
-      printf(" default %d min %d max %d", opt->def, opt->minVal, opt->maxVal);
-    case OPT_TYPE_BUTTON:
-      break;
-    case OPT_TYPE_STRING:
-    case OPT_TYPE_COMBO:
-      printf(" default %s", opt->defString);
-      break;
-    }
-    printf("\n");
-  }
-  fflush(stdout);
-}
 
 int option_value(int optIdx)
 {

@@ -47,23 +47,12 @@ void tt_free(void)
 
 // tt_allocate() allocates the transposition table, measured in megabytes.
 
-void tt_allocate(size_t mbSize)
+void tt_allocate(size_t kbSize)
 {
-  TT.clusterCount = mbSize * 1024 * 1024 / sizeof(Cluster);
+  TT.clusterCount = kbSize * 1024 / sizeof(Cluster);
   size_t size = TT.clusterCount * sizeof(Cluster);
 
   TT.table = NULL;
-  if (settings.largePages) {
-    TT.table = allocate_memory(size, true, &TT.alloc);
-#if !defined(__linux__)
-    if (!TT.table)
-      printf("info string Unable to allocate large pages for the "
-             "transposition table.\n");
-    else
-      printf("info string Transposition table allocated using large pages.\n");
-    fflush(stdout);
-#endif
-  }
   if (!TT.table)
     TT.table = allocate_memory(size, false, &TT.alloc);
   if (!TT.table)
@@ -76,7 +65,7 @@ void tt_allocate(size_t mbSize)
 
 failed:
   fprintf(stderr, "Failed to allocate %"PRIu64"MB for "
-                  "transposition table.\n", (uint64_t)mbSize);
+                  "transposition table.\n", (uint64_t)kbSize);
   exit(EXIT_FAILURE);
 }
 
