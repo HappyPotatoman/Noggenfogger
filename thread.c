@@ -79,7 +79,7 @@ static THREAD_FUNC thread_init(void *arg)
   pos = calloc(sizeof(Position), 1);
 #ifndef NNUE_PURE
   pos->pawnTable = calloc(PAWN_ENTRIES * sizeof(PawnEntry), 1);
-  pos->materialTable = calloc(4096 * sizeof(MaterialEntry), 1);
+  pos->materialTable = calloc(8192 * sizeof(MaterialEntry), 1);
 #endif
   pos->counterMoves = calloc(sizeof(CounterMoveStat), 1);
   pos->mainHistory = calloc(sizeof(ButterflyHistory), 1);
