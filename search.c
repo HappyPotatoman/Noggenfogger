@@ -1648,10 +1648,8 @@ static void update_pv(Move *pv, Move move, Move *childPv)
 static void update_cm_stats(Stack *ss, Piece pc, Square s, int bonus)
 {
   Piece adjusted_pc = piece_to_index[pc];
-    if (adjusted_pc == UINT8_MAX) {
-        // Handle invalid Piece values, if necessary
-        return;
-    }
+  assert(adjusted_pc != UINT8_MAX);
+
   if (move_is_ok((ss-1)->currentMove))
     cms_update(*(ss-1)->history, adjusted_pc, s, bonus);
 
