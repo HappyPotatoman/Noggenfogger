@@ -184,4 +184,6 @@ INLINE uint16_t readu_le_u16(const void *p)
   return q[0] | (q[1] << 8);
 }
 
+extern const uint8_t piece_to_index[16];
+
 #endif

@@ -143,7 +143,7 @@ void search_clear(void)
   for (int i = 0; i < numCmhTables; i++)
     if (cmhTables[i]) {
       stats_clear(cmhTables[i]);
-      for (int j = 0; j < 16; j++)
+      for (int j = 0; j < 12; j++)
         for (int k = 0; k < 64; k++)
           (*cmhTables[i])[0][0][j][k] = CounterMovePruneThreshold - 1;
     }
@@ -870,7 +870,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
         probCutCount--;
 
         ss->currentMove = move;
-        ss->history = &(*pos->counterMoveHistory)[moved_piece(move)][to_sq(move)];
+        ss->history = &(*pos->counterMoveHistory)[piece_to_index[moved_piece(move)]][to_sq(move)];
         givesCheck = gives_check(pos, ss, move);
         do_move(pos, move, givesCheck);
 
@@ -1003,8 +1003,8 @@ moves_loop: // When in check search starts from here
 
         // Countermoves based pruning
         if (   lmrDepth < 4
-            && (*cmh )[movedPiece][to_sq(move)] < (depth == 1 ? 0 : -stat_bonus(depth-1))
-            && (*fmh )[movedPiece][to_sq(move)] < (depth == 1 ? 0 : -stat_bonus(depth-1)))
+            && (*cmh )[piece_to_index[movedPiece]][to_sq(move)] < (depth == 1 ? 0 : -stat_bonus(depth-1))
+            && (*fmh )[piece_to_index[movedPiece]][to_sq(move)] < (depth == 1 ? 0 : -stat_bonus(depth-1)))
           continue;
 
         // Futility pruning: parent node
@@ -1097,7 +1097,7 @@ moves_loop: // When in check search starts from here
     // Update the current move (this must be done after singular extension
     // search)
     ss->currentMove = move;
-    ss->history = &(*pos->counterMoveHistory)[movedPiece][to_sq(move)];
+    ss->history = &(*pos->counterMoveHistory)[piece_to_index[movedPiece]][to_sq(move)];
 
     // Step 15. Make the move.
     do_move(pos, move, givesCheck);
@@ -1155,9 +1155,9 @@ moves_loop: // When in check search starts from here
       if (cutNode && move != ss->killers[0])
         r += 2;
 
-      ss->statScore =  (*cmh )[movedPiece][to_sq(move)]
-                      + (*fmh )[movedPiece][to_sq(move)]
-                      + (*fmh2)[movedPiece][to_sq(move)]
+      ss->statScore =  (*cmh )[piece_to_index[movedPiece]][to_sq(move)]
+                      + (*fmh )[piece_to_index[movedPiece]][to_sq(move)]
+                      + (*fmh2)[piece_to_index[movedPiece]][to_sq(move)]
                       + (*pos->mainHistory)[!stm()][from_to(move)]
                       - 4923;
 
@@ -1500,7 +1500,7 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
     ss->currentMove = move;
     bool captureOrPromotion = is_capture_or_promotion(pos, move);
     ss->history = &(*pos->counterMoveHistory)
-                                           [moved_piece(move)]
+                                           [piece_to_index[moved_piece(move)]]
                                            [to_sq(move)];
 
     if (  !captureOrPromotion
@@ -1643,25 +1643,29 @@ static void update_pv(Move *pv, Move move, Move *childPv)
   *pv = 0;
 }
 
-
 // update_cm_stats() updates countermove and follow-up move history.
 
 static void update_cm_stats(Stack *ss, Piece pc, Square s, int bonus)
 {
+  Piece adjusted_pc = piece_to_index[pc];
+    if (adjusted_pc == UINT8_MAX) {
+        // Handle invalid Piece values, if necessary
+        return;
+    }
   if (move_is_ok((ss-1)->currentMove))
-    cms_update(*(ss-1)->history, pc, s, bonus);
+    cms_update(*(ss-1)->history, adjusted_pc, s, bonus);
 
   if (move_is_ok((ss-2)->currentMove))
-    cms_update(*(ss-2)->history, pc, s, bonus);
+    cms_update(*(ss-2)->history, adjusted_pc, s, bonus);
 
   if (ss->checkersBB)
     return;
 
   if (move_is_ok((ss-4)->currentMove))
-    cms_update(*(ss-4)->history, pc, s, bonus);
+    cms_update(*(ss-4)->history, adjusted_pc, s, bonus);
 
   if (move_is_ok((ss-6)->currentMove))
-    cms_update(*(ss-6)->history, pc, s, bonus);
+    cms_update(*(ss-6)->history, adjusted_pc, s, bonus);
 }
 
 // update_capture_stats() updates move sorting heuristics when a new capture

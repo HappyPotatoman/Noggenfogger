@@ -34,6 +34,7 @@ static const int CounterMovePruneThreshold = 0;
 
 INLINE void cms_update(PieceToHistory cms, Piece pc, Square to, int v)
 {
+  assert(pc <= 12);
   cms[pc][to] += v - cms[pc][to] * abs(v) / 29952;
 }
 

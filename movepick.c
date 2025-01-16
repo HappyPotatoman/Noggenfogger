@@ -93,10 +93,10 @@ static void score_quiets(const Position *pos)
     Square to = move & 63;
     Square from = move >> 6;
     m->value =      (*history)[c][move]
-              + 2 * (*cmh)[piece_on(from)][to]
-              +     (*fmh)[piece_on(from)][to]
-              +     (*fmh2)[piece_on(from)][to]
-              +     (*fmh3)[piece_on(from)][to]
+              + 2 * (*cmh)[piece_to_index[piece_on(from)]][to]
+              +     (*fmh)[piece_to_index[piece_on(from)]][to]
+              +     (*fmh2)[piece_to_index[piece_on(from)]][to]
+              +     (*fmh3)[piece_to_index[piece_on(from)]][to]
               + (st->mp_ply < MAX_LPH ? 6 * (*lph)[st->mp_ply][move] : 0);
   }
 }
@@ -117,7 +117,7 @@ static void score_evasions(const Position *pos)
                 - type_of_p(moved_piece(m->move));
     else
       m->value =      (*history)[c][from_to(m->move)]
-                + 2 * (*cmh)[moved_piece(m->move)][to_sq(m->move)]
+                + 2 * (*cmh)[piece_to_index[moved_piece(m->move)]][to_sq(m->move)]
                 - (1 << 28);
 }
 

@@ -61,7 +61,7 @@ static THREAD_FUNC thread_init(void *arg)
 #endif
   if (t >= numCmhTables) {
     int old = numCmhTables;
-    numCmhTables = t + 16;
+    numCmhTables = t + 1;
     cmhTables = realloc(cmhTables,
         numCmhTables * sizeof(CounterMoveHistoryStat *));
     while (old < numCmhTables)
@@ -69,7 +69,7 @@ static THREAD_FUNC thread_init(void *arg)
   }
   if (!cmhTables[t]) {
     cmhTables[t] = calloc(sizeof(CounterMoveHistoryStat), 1);
-      for (int j = 0; j < 16; j++)
+      for (int j = 0; j < 12; j++)
         for (int k = 0; k < 64; k++)
           (*cmhTables[t])[0][0][j][k] = CounterMovePruneThreshold - 1;
   }
