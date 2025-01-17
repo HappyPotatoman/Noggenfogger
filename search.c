@@ -1050,9 +1050,10 @@ moves_loop: // When in check search starts from here
       if (value < singularBeta) {
         extension = 1;
         singularQuietLMR = !ttCapture;
-        if (!PvNode && value < singularBeta - 93 && ss->doubleExtensions < 3)
+        if (!PvNode && value < singularBeta - 93 && ss->doubleExtensions < 3){
           extension = 2;
           doubleExtension = true;
+        }
       }
 
       // Multi-cut pruning. Our ttMove is assumed to fail high, and now we
