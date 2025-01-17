@@ -801,7 +801,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
       && (ss-1)->statScore < 23767
       && eval >= beta
       && eval >= ss->staticEval
-      && ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 159
+      && ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 177
       && !excludedMove
       && non_pawn_material_c(stm())
       && (ss->ply >= pos->nmpMinPly || stm() != pos->nmpColor))
@@ -1020,7 +1020,7 @@ moves_loop: // When in check search starts from here
         // Futility pruning: parent node
         if (   lmrDepth < 7
             && !inCheck
-            && ss->staticEval + 174 + 157 * lmrDepth <= alpha)
+            && ss->staticEval + 172 + 157 * lmrDepth <= alpha)
           continue;
 
         // Prune moves with negative SEE at low depths and below a decreasing
