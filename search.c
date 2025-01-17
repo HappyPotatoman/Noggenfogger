@@ -1018,9 +1018,9 @@ moves_loop: // When in check search starts from here
           continue;
 
         // Futility pruning: parent node
-        if (   lmrDepth < 7
-            && !inCheck
-            && ss->staticEval + 172 + 157 * lmrDepth <= alpha)
+        if (    !inCheck
+            &&  lmrDepth < 8
+            &&  ss->staticEval + 172 + 145 * lmrDepth <= alpha)
           continue;
 
         // Prune moves with negative SEE at low depths and below a decreasing
@@ -1046,7 +1046,7 @@ moves_loop: // When in check search starts from here
         && (tte_bound(tte) & BOUND_LOWER)
         &&  tte_depth(tte) >= depth - 3)
     {
-      Value singularBeta = ttValue - 2 * depth;
+      Value singularBeta = ttValue - 3 * depth;
       Depth singularDepth = (depth - 1) / 2;
       ss->excludedMove = move;
       Move cm = ss->countermove;
