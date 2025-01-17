@@ -27,20 +27,17 @@
 enum { CAPTURES, QUIETS, QUIET_CHECKS, EVASIONS, NON_EVASIONS, LEGAL };
 
 
-INLINE ExtMove *make_promotions(ExtMove *list, Square to, Square ksq,
+INLINE ExtMove *make_promotions(ExtMove *list, Square to,
     const int Type, const int D)
 {
   if (Type == CAPTURES || Type == EVASIONS || Type == NON_EVASIONS) {
     (list++)->move = make_promotion(to - D, to, QUEEN);
-    if (attacks_from_knight(to) & sq_bb(ksq))
-      (list++)->move = make_promotion(to - D, to, KNIGHT);
   }
 
   if (Type == QUIETS || Type == EVASIONS || Type == NON_EVASIONS) {
     (list++)->move = make_promotion(to - D, to, ROOK);
     (list++)->move = make_promotion(to - D, to, BISHOP);
-    if (!(attacks_from_knight(to) & sq_bb(ksq)))
-      (list++)->move = make_promotion(to - D, to, KNIGHT);
+    (list++)->move = make_promotion(to - D, to, KNIGHT);
   }
 
   return list;
@@ -108,13 +105,13 @@ INLINE ExtMove *generate_pawn_moves(const Position *pos, ExtMove *list,
       b3 &= target;
 
     while (b1)
-      list = make_promotions(list, pop_lsb(&b1), pos->st->ksq, Type, Right);
+      list = make_promotions(list, pop_lsb(&b1), Type, Right);
 
     while (b2)
-      list = make_promotions(list, pop_lsb(&b2), pos->st->ksq, Type, Left);
+      list = make_promotions(list, pop_lsb(&b2), Type, Left);
 
     while (b3)
-      list = make_promotions(list, pop_lsb(&b3), pos->st->ksq, Type, Up);
+      list = make_promotions(list, pop_lsb(&b3), Type, Up);
   }
 
   // Standard and en-passant captures
