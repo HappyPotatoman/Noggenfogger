@@ -1057,7 +1057,10 @@ moves_loop: // When in check search starts from here
       if (value < singularBeta) {
         extension = 1;
         singularQuietLMR = !ttCapture;
-        if (!PvNode && value < singularBeta - 93 && ss->doubleExtensions < 3){
+        if ( !PvNode 
+          && value < singularBeta - 75 
+          && ss->doubleExtensions <= 6)
+        {
           extension = 2;
           doubleExtension = true;
         }
