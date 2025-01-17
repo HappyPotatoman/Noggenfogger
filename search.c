@@ -809,7 +809,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
     assert(eval - beta >= 0);
 
     // Null move dynamic reduction based on depth and value
-    Depth R = (1090 + 81 * depth) / 256 + min((eval - beta) / 205, 3);
+    Depth R = min((eval - beta) / 205, 3) + depth / 3 + 4;
 
     ss->currentMove = MOVE_NULL;
     ss->history = &(*pos->counterMoveHistory)[0][0];
