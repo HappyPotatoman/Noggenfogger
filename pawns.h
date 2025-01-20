@@ -29,7 +29,7 @@
 
 // Number of entries in the pawn hash table. Must be a power of 2.
 // #define PAWN_ENTRIES 16384
-#define PAWN_ENTRIES 2048
+#define PAWN_ENTRIES 8192
 
 // PawnEntry contains various information about a pawn structure. A lookup
 // to the pawn hash table (performed by calling the probe function) returns
