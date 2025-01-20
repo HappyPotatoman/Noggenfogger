@@ -112,5 +112,6 @@ extern CounterMoveHistoryStat cmhTable;
 extern int numCmhTables;
 
 extern CounterMoveStat counterMoves;
+extern ButterflyHistory mainHistory;
 
 #endif

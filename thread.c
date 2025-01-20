@@ -45,12 +45,25 @@ MainThread mainThread;
 int numCmhTables = 0;
 CounterMoveHistoryStat cmhTable __attribute__((aligned(64))) = { 0 };
 CounterMoveStat counterMoves __attribute__((aligned(64))) = { 0 };
+ButterflyHistory mainHistory __attribute__((aligned(64))) = { 0 };
 
 void cmh_init() {
   numCmhTables = 1;
   for (int j = 0; j < 12; j++)
     for (int k = 0; k < 64; k++)
       cmhTable[0][0][j][k] = CounterMovePruneThreshold - 1;
+}
+
+void counterMoves_init() {
+  for (int j = 0; j < 16; j++)
+    for (int k = 0; k < 64; k++)
+      counterMoves[j][k] = 0;
+}
+
+void butterfly_history_init() {
+  for (int i = 0; i < 2; i++)
+    for (int j = 0; j < 4096; j++)
+      mainHistory[i][j] = 0;
 }
 
 // thread_init() is where a search thread starts and initialises itself.
@@ -68,6 +81,8 @@ static THREAD_FUNC thread_init(void *arg)
   int t = node;
 #endif
   cmh_init();
+  counterMoves_init();
+  butterfly_history_init();
 
   Position *pos;
 
@@ -76,7 +91,6 @@ static THREAD_FUNC thread_init(void *arg)
   pos->pawnTable = calloc(PAWN_ENTRIES * sizeof(PawnEntry), 1);
   pos->materialTable = calloc(8192 * sizeof(MaterialEntry), 1);
 #endif
-  pos->mainHistory = calloc(sizeof(ButterflyHistory), 1);
   pos->captureHistory = calloc(sizeof(CapturePieceToHistory), 1);
   pos->lowPlyHistory = calloc(sizeof(LowPlyHistory), 1);
   pos->rootMoves = calloc(sizeof(RootMoves), 1);
@@ -168,7 +182,6 @@ static void thread_destroy(Position *pos)
     numa_free(pos->pawnTable, PAWN_ENTRIES * sizeof(PawnEntry));
     numa_free(pos->materialTable, 8192 * sizeof(MaterialEntry));
 #endif
-    numa_free(pos->mainHistory, sizeof(ButterflyHistory));
     numa_free(pos->captureHistory, sizeof(CapturePieceToHistory));
     numa_free(pos->lowPlyHistory, sizeof(LowPlyHistory));
     numa_free(pos->rootMoves, sizeof(RootMoves));
@@ -180,7 +193,6 @@ static void thread_destroy(Position *pos)
     free(pos->pawnTable);
     free(pos->materialTable);
 #endif
-    free(pos->mainHistory);
     free(pos->captureHistory);
     free(pos->lowPlyHistory);
     free(pos->rootMoves);

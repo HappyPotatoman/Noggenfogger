@@ -78,7 +78,7 @@ SMALL
 static void score_quiets(const Position *pos)
 {
   Stack *st = pos->st;
-  ButterflyHistory *history = pos->mainHistory;
+  ButterflyHistory *history = &mainHistory;
   LowPlyHistory *lph = pos->lowPlyHistory;
 
   PieceToHistory *cmh = (st-1)->history;
@@ -107,7 +107,7 @@ static void score_evasions(const Position *pos)
   // Try captures ordered by MVV/LVA, then non-captures ordered by
   // stats heuristics.
 
-  ButterflyHistory *history = pos->mainHistory;
+  ButterflyHistory *history = &mainHistory;
   PieceToHistory *cmh = (st-1)->history;
   Color c = stm();
 
