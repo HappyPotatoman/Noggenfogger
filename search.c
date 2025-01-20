@@ -143,7 +143,6 @@ void search_clear(void)
 
   for (int idx = 0; idx < Threads.numThreads; idx++) {
     Position *pos = Threads.pos[idx];
-    stats_clear(pos->counterMoves);
     stats_clear(pos->mainHistory);
     stats_clear(pos->captureHistory);
     stats_clear(pos->lowPlyHistory);
@@ -1725,7 +1724,7 @@ static void update_quiet_stats(const Position *pos, Stack *ss, Move move,
 
   if (move_is_ok((ss-1)->currentMove)) {
     Square prevSq = to_sq((ss-1)->currentMove);
-    (*pos->counterMoves)[piece_on(prevSq)][prevSq] = move;
+    counterMoves[piece_on(prevSq)][prevSq] = move;
   }
 
   if (depth > 11 && ss->ply < MAX_LPH)

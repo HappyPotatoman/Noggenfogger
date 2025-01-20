@@ -111,4 +111,6 @@ INLINE Position *threads_main(void)
 extern CounterMoveHistoryStat cmhTable;
 extern int numCmhTables;
 
+extern CounterMoveStat counterMoves;
+
 #endif

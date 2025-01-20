@@ -44,6 +44,7 @@ ThreadPool Threads;
 MainThread mainThread;
 int numCmhTables = 0;
 CounterMoveHistoryStat cmhTable __attribute__((aligned(64))) = { 0 };
+CounterMoveStat counterMoves __attribute__((aligned(64))) = { 0 };
 
 void cmh_init() {
   numCmhTables = 1;
@@ -75,7 +76,6 @@ static THREAD_FUNC thread_init(void *arg)
   pos->pawnTable = calloc(PAWN_ENTRIES * sizeof(PawnEntry), 1);
   pos->materialTable = calloc(8192 * sizeof(MaterialEntry), 1);
 #endif
-  pos->counterMoves = calloc(sizeof(CounterMoveStat), 1);
   pos->mainHistory = calloc(sizeof(ButterflyHistory), 1);
   pos->captureHistory = calloc(sizeof(CapturePieceToHistory), 1);
   pos->lowPlyHistory = calloc(sizeof(LowPlyHistory), 1);
@@ -168,7 +168,6 @@ static void thread_destroy(Position *pos)
     numa_free(pos->pawnTable, PAWN_ENTRIES * sizeof(PawnEntry));
     numa_free(pos->materialTable, 8192 * sizeof(MaterialEntry));
 #endif
-    numa_free(pos->counterMoves, sizeof(CounterMoveStat));
     numa_free(pos->mainHistory, sizeof(ButterflyHistory));
     numa_free(pos->captureHistory, sizeof(CapturePieceToHistory));
     numa_free(pos->lowPlyHistory, sizeof(LowPlyHistory));
@@ -181,7 +180,6 @@ static void thread_destroy(Position *pos)
     free(pos->pawnTable);
     free(pos->materialTable);
 #endif
-    free(pos->counterMoves);
     free(pos->mainHistory);
     free(pos->captureHistory);
     free(pos->lowPlyHistory);

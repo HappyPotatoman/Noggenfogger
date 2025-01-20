@@ -171,7 +171,6 @@ struct Position {
   int failedHighCnt;
 
   // Pointers to thread-specific tables.
-  CounterMoveStat *counterMoves;
   ButterflyHistory *mainHistory;
   LowPlyHistory *lowPlyHistory;
   CapturePieceToHistory *captureHistory;
