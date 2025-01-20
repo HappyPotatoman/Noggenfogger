@@ -172,7 +172,6 @@ struct Position {
 
   // Pointers to thread-specific tables.
   LowPlyHistory *lowPlyHistory;
-  CapturePieceToHistory *captureHistory;
   PawnEntry *pawnTable;
   MaterialEntry *materialTable;
 

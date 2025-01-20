@@ -141,12 +141,6 @@ void search_clear(void)
 
   tt_clear();
 
-  for (int idx = 0; idx < Threads.numThreads; idx++) {
-    Position *pos = Threads.pos[idx];
-    stats_clear(pos->captureHistory);
-    stats_clear(pos->lowPlyHistory);
-  }
-
   mainThread.previousScore = VALUE_INFINITE;
   mainThread.previousTimeReduction = 1;
 }
@@ -993,7 +987,7 @@ moves_loop: // When in check search starts from here
         // Capture history based pruning when the move doesn't give check
         if (   !givesCheck
             && lmrDepth < 1
-            && (*pos->captureHistory)[movedPiece][to_sq(move)][type_of_p(piece_on(to_sq(move)))] < 0)
+            && (captureHistory)[movedPiece][to_sq(move)][type_of_p(piece_on(to_sq(move)))] < 0)
           continue;
 
         // SEE based pruning
@@ -1693,13 +1687,13 @@ static void update_capture_stats(const Position *pos, Move move, Move *captures,
   int captured = type_of_p(piece_on(to_sq(move)));
 
   if (is_capture_or_promotion(pos, move))
-    cpth_update(*pos->captureHistory, moved_piece, to_sq(move), captured, bonus);
+    cpth_update(captureHistory, moved_piece, to_sq(move), captured, bonus);
 
   // Decrease all the other played capture moves
   for (int i = 0; i < captureCnt; i++) {
     moved_piece = moved_piece(captures[i]);
     captured = type_of_p(piece_on(to_sq(captures[i])));
-    cpth_update(*pos->captureHistory, moved_piece, to_sq(captures[i]), captured, -bonus);
+    cpth_update(captureHistory, moved_piece, to_sq(captures[i]), captured, -bonus);
   }
 }
 

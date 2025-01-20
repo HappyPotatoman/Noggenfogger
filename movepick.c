@@ -64,7 +64,7 @@ static Move pick_best(ExtMove *begin, ExtMove *end)
 static void score_captures(const Position *pos)
 {
   Stack *st = pos->st;
-  CapturePieceToHistory *history = pos->captureHistory;
+  CapturePieceToHistory *history = &captureHistory;
 
   // Winning and equal captures in the main search are ordered by MVV,
   // preferring captures near our with a good history.

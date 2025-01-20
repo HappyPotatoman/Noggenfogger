@@ -46,6 +46,7 @@ int numCmhTables = 0;
 CounterMoveHistoryStat cmhTable __attribute__((aligned(64))) = { 0 };
 CounterMoveStat counterMoves __attribute__((aligned(64))) = { 0 };
 ButterflyHistory mainHistory __attribute__((aligned(64))) = { 0 };
+CapturePieceToHistory captureHistory __attribute__((aligned(64))) = { 0 };
 
 void cmh_init() {
   numCmhTables = 1;
@@ -66,6 +67,13 @@ void butterfly_history_init() {
       mainHistory[i][j] = 0;
 }
 
+void capture_history_init() {
+  for (int i = 0; i < 16; i++)
+    for (int j = 0; j < 64; j++)
+      for (int k = 0; k < 8; k++)
+        captureHistory[i][j][k] = 0;
+}
+
 // thread_init() is where a search thread starts and initialises itself.
 
 static THREAD_FUNC thread_init(void *arg)
@@ -83,6 +91,7 @@ static THREAD_FUNC thread_init(void *arg)
   cmh_init();
   counterMoves_init();
   butterfly_history_init();
+  capture_history_init();
 
   Position *pos;
 
@@ -91,7 +100,6 @@ static THREAD_FUNC thread_init(void *arg)
   pos->pawnTable = calloc(PAWN_ENTRIES * sizeof(PawnEntry), 1);
   pos->materialTable = calloc(8192 * sizeof(MaterialEntry), 1);
 #endif
-  pos->captureHistory = calloc(sizeof(CapturePieceToHistory), 1);
   pos->lowPlyHistory = calloc(sizeof(LowPlyHistory), 1);
   pos->rootMoves = calloc(sizeof(RootMoves), 1);
   pos->stackAllocation = calloc(63 + (MAX_PLY + 110) * sizeof(Stack), 1);
@@ -182,7 +190,6 @@ static void thread_destroy(Position *pos)
     numa_free(pos->pawnTable, PAWN_ENTRIES * sizeof(PawnEntry));
     numa_free(pos->materialTable, 8192 * sizeof(MaterialEntry));
 #endif
-    numa_free(pos->captureHistory, sizeof(CapturePieceToHistory));
     numa_free(pos->lowPlyHistory, sizeof(LowPlyHistory));
     numa_free(pos->rootMoves, sizeof(RootMoves));
     numa_free(pos->stackAllocation, 63 + (MAX_PLY + 110) * sizeof(Stack));
@@ -193,7 +200,6 @@ static void thread_destroy(Position *pos)
     free(pos->pawnTable);
     free(pos->materialTable);
 #endif
-    free(pos->captureHistory);
     free(pos->lowPlyHistory);
     free(pos->rootMoves);
     free(pos->stackAllocation);
