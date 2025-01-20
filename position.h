@@ -177,7 +177,6 @@ struct Position {
   CapturePieceToHistory *captureHistory;
   PawnEntry *pawnTable;
   MaterialEntry *materialTable;
-  CounterMoveHistoryStat *counterMoveHistory;
 
   // Thread-control data.
   uint64_t bestMoveChanges;

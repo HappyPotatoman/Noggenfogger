@@ -42,8 +42,15 @@ static void thread_idle_loop(Position *pos);
 // Global objects
 ThreadPool Threads;
 MainThread mainThread;
-CounterMoveHistoryStat **cmhTables = NULL;
 int numCmhTables = 0;
+CounterMoveHistoryStat cmhTable __attribute__((aligned(64))) = { 0 };
+
+void cmh_init() {
+  numCmhTables = 1;
+  for (int j = 0; j < 12; j++)
+    for (int k = 0; k < 64; k++)
+      cmhTable[0][0][j][k] = CounterMovePruneThreshold - 1;
+}
 
 // thread_init() is where a search thread starts and initialises itself.
 
@@ -59,20 +66,7 @@ static THREAD_FUNC thread_init(void *arg)
 #else
   int t = node;
 #endif
-  if (t >= numCmhTables) {
-    int old = numCmhTables;
-    numCmhTables = t + 1;
-    cmhTables = realloc(cmhTables,
-        numCmhTables * sizeof(CounterMoveHistoryStat *));
-    while (old < numCmhTables)
-      cmhTables[old++] = NULL;
-  }
-  if (!cmhTables[t]) {
-    cmhTables[t] = calloc(sizeof(CounterMoveHistoryStat), 1);
-      for (int j = 0; j < 12; j++)
-        for (int k = 0; k < 64; k++)
-          (*cmhTables[t])[0][0][j][k] = CounterMovePruneThreshold - 1;
-  }
+  cmh_init();
 
   Position *pos;
 
@@ -90,7 +84,6 @@ static THREAD_FUNC thread_init(void *arg)
   pos->moveList = calloc(2000 * sizeof(ExtMove), 1);
   pos->stack = (Stack *)(((uintptr_t)pos->stackAllocation + 0x3f) & ~0x3f);
   pos->threadIdx = idx;
-  pos->counterMoveHistory = cmhTables[t];
 
   pos->resetCalls = false;
   pos->selDepth = pos->callsCnt = 0;
@@ -389,19 +382,6 @@ void threads_set_number(int num)
     thread_destroy(Threads.pos[--Threads.numThreads]);
 
   search_init();
-
-  if (num == 0 && numCmhTables > 0) {
-    for (int i = 0; i < numCmhTables; i++)
-      if (cmhTables[i]) {
-        if (settings.numaEnabled)
-          numa_free(cmhTables[i], sizeof(CounterMoveHistoryStat));
-        else
-          free(cmhTables[i]);
-      }
-    free(cmhTables);
-    cmhTables = NULL;
-    numCmhTables = 0;
-  }
 
   if (num == 0)
     Threads.searching = false;

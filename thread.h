@@ -31,6 +31,10 @@
 
 #define MAX_THREADS 1
 
+#define MAX_CMH_TABLES 1
+#define MAX_PIECES 12
+#define MAX_SQUARES 64
+
 #ifndef _WIN32
 #define LOCK_T int
 #define LOCK_INIT(x) (void)(x)
@@ -104,7 +108,7 @@ INLINE Position *threads_main(void)
   return Threads.pos[0];
 }
 
-extern CounterMoveHistoryStat **cmhTables;
+extern CounterMoveHistoryStat cmhTable;
 extern int numCmhTables;
 
 #endif
