@@ -47,6 +47,7 @@ CounterMoveHistoryStat cmhTable __attribute__((aligned(64))) = { 0 };
 CounterMoveStat counterMoves __attribute__((aligned(64))) = { 0 };
 ButterflyHistory mainHistory __attribute__((aligned(64))) = { 0 };
 CapturePieceToHistory captureHistory __attribute__((aligned(64))) = { 0 };
+PawnTable pawnTable __attribute__((aligned(64))) = { 0 };
 
 void cmh_init() {
   numCmhTables = 1;
@@ -96,10 +97,7 @@ static THREAD_FUNC thread_init(void *arg)
   Position *pos;
 
   pos = calloc(sizeof(Position), 1);
-#ifndef NNUE_PURE
-  pos->pawnTable = calloc(PAWN_ENTRIES * sizeof(PawnEntry), 1);
   pos->materialTable = calloc(8192 * sizeof(MaterialEntry), 1);
-#endif
   pos->lowPlyHistory = calloc(sizeof(LowPlyHistory), 1);
   pos->rootMoves = calloc(sizeof(RootMoves), 1);
   pos->stackAllocation = calloc(63 + (MAX_PLY + 110) * sizeof(Stack), 1);
@@ -187,7 +185,6 @@ static void thread_destroy(Position *pos)
 
   if (settings.numaEnabled) {
 #ifndef NNUE_PURE
-    numa_free(pos->pawnTable, PAWN_ENTRIES * sizeof(PawnEntry));
     numa_free(pos->materialTable, 8192 * sizeof(MaterialEntry));
 #endif
     numa_free(pos->lowPlyHistory, sizeof(LowPlyHistory));
@@ -197,7 +194,6 @@ static void thread_destroy(Position *pos)
     numa_free(pos, sizeof(Position));
   } else {
 #ifndef NNUE_PURE
-    free(pos->pawnTable);
     free(pos->materialTable);
 #endif
     free(pos->lowPlyHistory);

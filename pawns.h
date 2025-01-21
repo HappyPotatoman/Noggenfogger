@@ -54,6 +54,8 @@ struct PawnEntry {
 typedef struct PawnEntry PawnEntry;
 typedef PawnEntry PawnTable[PAWN_ENTRIES];
 
+extern PawnTable pawnTable;
+
 Score do_king_safety_white(PawnEntry *pe, const Position *pos, Square ksq);
 Score do_king_safety_black(PawnEntry *pe, const Position *pos, Square ksq);
 
@@ -65,7 +67,7 @@ void pawn_entry_fill(const Position *pos, PawnEntry *e, Key k);
 INLINE PawnEntry *pawn_probe(const Position *pos)
 {
   Key key = pawn_key();
-  PawnEntry *e = &pos->pawnTable[key & (PAWN_ENTRIES - 1)];
+  PawnEntry *e = &pawnTable[key & (PAWN_ENTRIES - 1)];
 
   if (unlikely(e->key != key))
     pawn_entry_fill(pos, e, key);
