@@ -48,31 +48,13 @@ CounterMoveStat counterMoves __attribute__((aligned(64))) = { 0 };
 ButterflyHistory mainHistory __attribute__((aligned(64))) = { 0 };
 CapturePieceToHistory captureHistory __attribute__((aligned(64))) = { 0 };
 PawnTable pawnTable __attribute__((aligned(64))) = { 0 };
+MaterialTable materialTable __attribute__((aligned(64))) = { 0 };
 
 void cmh_init() {
   numCmhTables = 1;
   for (int j = 0; j < 12; j++)
     for (int k = 0; k < 64; k++)
       cmhTable[0][0][j][k] = CounterMovePruneThreshold - 1;
-}
-
-void counterMoves_init() {
-  for (int j = 0; j < 16; j++)
-    for (int k = 0; k < 64; k++)
-      counterMoves[j][k] = 0;
-}
-
-void butterfly_history_init() {
-  for (int i = 0; i < 2; i++)
-    for (int j = 0; j < 4096; j++)
-      mainHistory[i][j] = 0;
-}
-
-void capture_history_init() {
-  for (int i = 0; i < 16; i++)
-    for (int j = 0; j < 64; j++)
-      for (int k = 0; k < 8; k++)
-        captureHistory[i][j][k] = 0;
 }
 
 // thread_init() is where a search thread starts and initialises itself.
@@ -90,14 +72,10 @@ static THREAD_FUNC thread_init(void *arg)
   int t = node;
 #endif
   cmh_init();
-  counterMoves_init();
-  butterfly_history_init();
-  capture_history_init();
 
   Position *pos;
 
   pos = calloc(sizeof(Position), 1);
-  pos->materialTable = calloc(8192 * sizeof(MaterialEntry), 1);
   pos->lowPlyHistory = calloc(sizeof(LowPlyHistory), 1);
   pos->rootMoves = calloc(sizeof(RootMoves), 1);
   pos->stackAllocation = calloc(63 + (MAX_PLY + 110) * sizeof(Stack), 1);
@@ -184,18 +162,12 @@ static void thread_destroy(Position *pos)
 #endif
 
   if (settings.numaEnabled) {
-#ifndef NNUE_PURE
-    numa_free(pos->materialTable, 8192 * sizeof(MaterialEntry));
-#endif
     numa_free(pos->lowPlyHistory, sizeof(LowPlyHistory));
     numa_free(pos->rootMoves, sizeof(RootMoves));
     numa_free(pos->stackAllocation, 63 + (MAX_PLY + 110) * sizeof(Stack));
     numa_free(pos->moveList, 10000 * sizeof(ExtMove));
     numa_free(pos, sizeof(Position));
   } else {
-#ifndef NNUE_PURE
-    free(pos->materialTable);
-#endif
     free(pos->lowPlyHistory);
     free(pos->rootMoves);
     free(pos->stackAllocation);
