@@ -1514,8 +1514,8 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
 
     if (  !captureOrPromotion
         && bestValue > VALUE_TB_LOSS_IN_MAX_PLY
-        && (*(ss-1)->history)[moved_piece(move)][to_sq(move)] < CounterMovePruneThreshold
-        && (*(ss-2)->history)[moved_piece(move)][to_sq(move)] < CounterMovePruneThreshold)
+        && (*(ss-1)->history)[piece_to_index[moved_piece(move)]][to_sq(move)] < CounterMovePruneThreshold
+        && (*(ss-2)->history)[piece_to_index[moved_piece(move)]][to_sq(move)] < CounterMovePruneThreshold)
       continue;
 
     // Make and search the move
