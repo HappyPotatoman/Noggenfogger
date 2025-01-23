@@ -67,7 +67,6 @@ static THREAD_FUNC thread_init(void *arg)
   node = 0;
 #ifdef PER_THREAD_CMH
   (void)node;
-  int t = idx;
 #else
   int t = node;
 #endif
@@ -76,7 +75,6 @@ static THREAD_FUNC thread_init(void *arg)
   Position *pos;
 
   pos = calloc(sizeof(Position), 1);
-  pos->lowPlyHistory = calloc(sizeof(LowPlyHistory), 1);
   pos->rootMoves = calloc(sizeof(RootMoves), 1);
   pos->stackAllocation = calloc(63 + (MAX_PLY + 110) * sizeof(Stack), 1);
   pos->moveList = calloc(2000 * sizeof(ExtMove), 1);
@@ -162,13 +160,11 @@ static void thread_destroy(Position *pos)
 #endif
 
   if (settings.numaEnabled) {
-    numa_free(pos->lowPlyHistory, sizeof(LowPlyHistory));
     numa_free(pos->rootMoves, sizeof(RootMoves));
     numa_free(pos->stackAllocation, 63 + (MAX_PLY + 110) * sizeof(Stack));
     numa_free(pos->moveList, 10000 * sizeof(ExtMove));
     numa_free(pos, sizeof(Position));
   } else {
-    free(pos->lowPlyHistory);
     free(pos->rootMoves);
     free(pos->stackAllocation);
     free(pos->moveList);

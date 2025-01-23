@@ -169,11 +169,7 @@ struct Position {
   Depth completedDepth;
   Score contempt;
   int failedHighCnt;
-
-  // Pointers to thread-specific tables.
-  LowPlyHistory *lowPlyHistory;
-  MaterialEntry *materialTable;
-
+  
   // Thread-control data.
   uint64_t bestMoveChanges;
   bool resetCalls;
