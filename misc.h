@@ -185,5 +185,6 @@ INLINE uint16_t readu_le_u16(const void *p)
 }
 
 extern const uint8_t piece_to_index[16];
+extern const uint8_t compress_square[64];
 
 #endif

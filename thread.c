@@ -53,7 +53,7 @@ MaterialTable materialTable __attribute__((aligned(64))) = { 0 };
 void cmh_init() {
   numCmhTables = 1;
   for (int j = 0; j < 12; j++)
-    for (int k = 0; k < 64; k++)
+    for (int k = 0; k < 40; k++)
       cmhTable[0][0][j][k] = CounterMovePruneThreshold - 1;
 }
 
