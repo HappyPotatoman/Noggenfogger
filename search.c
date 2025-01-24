@@ -981,6 +981,8 @@ moves_loop: // When in check search starts from here
             && (captureHistory)[movedPiece][to_sq(move)][type_of_p(piece_on(to_sq(move)))] < 0)
           continue;
 
+        if ()
+
         // SEE based pruning
         if (!see_test(pos, move, -218 * depth))
           continue;
@@ -1183,7 +1185,7 @@ moves_loop: // When in check search starts from here
         rangeReduction++;
 
       doFullDepthSearch = value > alpha && d < newDepth;
-      doDeeperSearch = value > alpha + 88;
+      doDeeperSearch = value > (alpha + 62 + 20 * (newDepth - d));
       didLMR = true;
     } else {
       doFullDepthSearch = !PvNode || moveCount > 1;
