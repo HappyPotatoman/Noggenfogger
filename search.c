@@ -995,10 +995,11 @@ moves_loop: // When in check search starts from here
             && history < -3000 * depth + 3000)
           continue;
 
+        history += mainHistory[stm()][from_to(move)];
         // Futility pruning: parent node
         if (    !inCheck
             &&  lmrDepth < 8
-            &&  ss->staticEval + 172 + 145 * lmrDepth + history / 256 <= alpha)
+            &&  ss->staticEval + 172 + 145 * lmrDepth + history / 128 <= alpha)
           continue;
 
         // Prune moves with negative SEE at low depths and below a decreasing
