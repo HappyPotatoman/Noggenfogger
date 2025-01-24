@@ -1019,7 +1019,7 @@ moves_loop: // When in check search starts from here
     // reduced search on all the other moves but the ttMove and if the
     // result is lower than ttValue minus a margin, then we extend the ttMove.
     if (    !rootNode 
-        &&  depth >= 7
+        &&  depth >= 6 + 2 * (PvNode && tte_is_pv(tte))
         &&  move == ttMove
         && !excludedMove // No recursive singular search
      /* &&  ttValue != VALUE_NONE implicit in the next condition */
