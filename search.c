@@ -1157,9 +1157,11 @@ moves_loop: // When in check search starts from here
       if (cutNode && move != ss->killers[0])
         r += 2;
 
-      ss->statScore =  (*cmh )[piece_to_index[movedPiece]][compress_square[to_sq(move)]]
-                      + (*fmh )[piece_to_index[movedPiece]][compress_square[to_sq(move)]]
-                      + (*fmh2)[piece_to_index[movedPiece]][compress_square[to_sq(move)]]
+      uint8_t adj_piece = piece_to_index[movedPiece];
+      uint8_t adj_sq = compress_square[to_sq(move)];
+      ss->statScore =  (*cmh )[adj_piece][adj_sq]
+                      + (*fmh )[adj_piece][adj_sq]
+                      + (*fmh2)[adj_piece][adj_sq]
                       + (mainHistory)[!stm()][from_to(move)]
                       - 4923;
 
@@ -1504,12 +1506,14 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
 
     ss->currentMove = move;
     bool captureOrPromotion = is_capture_or_promotion(pos, move);
-    ss->history = &cmhTable[piece_to_index[moved_piece(move)]][compress_square[to_sq(move)]];
+    uint8_t adj_piece = piece_to_index[moved_piece(move)];
+    uint8_t adj_sq = compress_square[to_sq(move)];
+    ss->history = &cmhTable[adj_piece][adj_sq];
 
     if (  !captureOrPromotion
         && bestValue > VALUE_TB_LOSS_IN_MAX_PLY
-        && (*(ss-1)->history)[piece_to_index[moved_piece(move)]][compress_square[to_sq(move)]] < CounterMovePruneThreshold
-        && (*(ss-2)->history)[piece_to_index[moved_piece(move)]][compress_square[to_sq(move)]] < CounterMovePruneThreshold)
+        && (*(ss-1)->history)[adj_piece][adj_sq] < CounterMovePruneThreshold
+        && (*(ss-2)->history)[adj_piece][adj_sq] < CounterMovePruneThreshold)
       continue;
 
     // Make and search the move
