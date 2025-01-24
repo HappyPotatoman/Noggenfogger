@@ -1047,7 +1047,12 @@ moves_loop: // When in check search starts from here
       // moves fail high. We therefore prune the whole subtree by returning
       // a soft bound.
       else if (singularBeta >= beta)
-        return singularBeta;
+        {
+          if (!ttCapture)
+            update_quiet_stats(pos, ss, ttMove, -stat_bonus(depth));
+
+          return singularBeta;
+        }
 
       // If the eval of ttMove is greater than beta we also check whether
       // there is another move that pushes it over beta. If so, we prune.
