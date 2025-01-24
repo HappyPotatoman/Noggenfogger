@@ -1478,6 +1478,7 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
   // be generated.
   mp_init_q(pos, ttMove, depth, to_sq((ss-1)->currentMove));
 
+  int quietCheckEvasions = 0;
   // Loop through the moves until no moves remain or a beta cutoff occurs
   while ((move = next_move(pos, 0))) {
     assert(move_is_ok(move));
@@ -1533,6 +1534,14 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
         && (*(ss-1)->history)[adj_piece][adj_sq] < CounterMovePruneThreshold
         && (*(ss-2)->history)[adj_piece][adj_sq] < CounterMovePruneThreshold)
       continue;
+    
+    if ( bestValue > VALUE_TB_LOSS_IN_MAX_PLY
+      &&  quietCheckEvasions > 1
+      && !captureOrPromotion
+      && InCheck)
+      continue;
+    
+    quietCheckEvasions += !captureOrPromotion && InCheck;
 
     // Make and search the move
     do_move(pos, move, givesCheck);
