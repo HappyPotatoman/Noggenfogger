@@ -23,13 +23,11 @@
 #include "bitboard.h"
 #include "endgame.h"
 #include "pawns.h"
-// #include "polybook.h"
 #include "position.h"
 #include "search.h"
 #include "thread.h"
 #include "tt.h"
 #include "uci.h"
-// #include "tbprobe.h"
 
 int main(int argc, char **argv)
 {
@@ -49,7 +47,6 @@ int main(int argc, char **argv)
   threads_exit();
   options_free();
   tt_free();
-  // pb_free();
-
+  
   return 0;
 }
