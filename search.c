@@ -981,10 +981,8 @@ moves_loop: // When in check search starts from here
             && (captureHistory)[movedPiece][to_sq(move)][type_of_p(piece_on(to_sq(move)))] < 0)
           continue;
 
-        if ()
-
         // SEE based pruning
-        if (!see_test(pos, move, -218 * depth))
+        if (!see_test(pos, move, -217 * depth))
           continue;
 
       } else {
@@ -994,7 +992,7 @@ moves_loop: // When in check search starts from here
             + (*fmh2)[piece_to_index[movedPiece]][compress_square[to_sq(move)]];
         // Countermoves based pruning
         if (   lmrDepth < 4
-            && history < -3000 * depth + 3000)
+            && history < -3875 * (depth - 1))
           continue;
 
         history += mainHistory[stm()][from_to(move)];
@@ -1003,7 +1001,7 @@ moves_loop: // When in check search starts from here
         // Futility pruning: parent node
         if (    !inCheck
             &&  lmrDepth < 8
-            &&  ss->staticEval + 142 + 139 * lmrDepth + history / 64 <= alpha)
+            &&  ss->staticEval + 138 + 137 * lmrDepth + history / 64 <= alpha)
           continue;
 
         // Prune moves with negative SEE at low depths and below a decreasing
