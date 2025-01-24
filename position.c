@@ -777,7 +777,7 @@ void do_move(Position *pos, Move m, int givesCheck)
     key ^= zob.psq[captured][capsq];
     st->materialKey -= matKey[captured];
 #ifndef NNUE_PURE
-    prefetch(&materialTable[st->materialKey >> (64 - 12)]);
+    prefetch(&materialTable[st->materialKey >> (64 - 13)]);
 
     // Update incremental scores
     st->psq -= psqt.psq[captured][capsq];
