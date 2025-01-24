@@ -996,6 +996,8 @@ moves_loop: // When in check search starts from here
           continue;
 
         history += mainHistory[stm()][from_to(move)];
+
+        lmrDepth = max(0, lmrDepth - (beta - alpha < pos->rootDelta / 4));
         // Futility pruning: parent node
         if (    !inCheck
             &&  lmrDepth < 8
