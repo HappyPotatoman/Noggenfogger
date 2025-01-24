@@ -166,6 +166,7 @@ struct Position {
   int selDepth, nmpMinPly;
   Color nmpColor;
   Depth rootDepth;
+  Value rootDelta;
   Depth completedDepth;
   Score contempt;
   int failedHighCnt;

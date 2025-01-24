@@ -657,6 +657,8 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
       if (alpha >= mate_in(ss->ply+1))
         return alpha;
     }
+  } else {
+    pos->rootDelta = beta - alpha;
   }
 
   assert(0 <= ss->ply && ss->ply < MAX_PLY);
@@ -1120,8 +1122,8 @@ moves_loop: // When in check search starts from here
     {
       Depth r = reduction(improving, depth, moveCount, rangeReduction > 2);
 
-      if (PvNode)
-        r--;
+      if (PvNode && beta - alpha < pos->rootDelta / 4)
+        r++;
 
       // Decrease reduction if the ttHit runing average is large
       if (pos->ttHitAverage > 537 * ttHitAverageResolution * ttHitAverageWindow / 1024)
