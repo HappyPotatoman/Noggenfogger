@@ -1112,6 +1112,8 @@ moves_loop: // When in check search starts from here
     // HACK: Fix bench after introduction of 2-fold MultiPV bug
     if (rootNode) pos->st[-1].key ^= pos->rootKeyFlip;
 
+    bool doDeeperSearch = false;
+
     // Step 16. Late moves reduction / extension (LMR)
     // We use various heuristics for the children of a node after the first
     // child has been searched. In general we would like to reduce them, but
@@ -1181,6 +1183,7 @@ moves_loop: // When in check search starts from here
         rangeReduction++;
 
       doFullDepthSearch = value > alpha && d < newDepth;
+      doDeeperSearch = value > alpha + 88;
       didLMR = true;
     } else {
       doFullDepthSearch = !PvNode || moveCount > 1;
@@ -1189,7 +1192,7 @@ moves_loop: // When in check search starts from here
 
     // Step 17. Full depth search when LMR is skipped or fails high.
     if (doFullDepthSearch) {
-      value = -search_NonPV(pos, ss+1, -(alpha+1), newDepth, !cutNode);
+      value = -search_NonPV(pos, ss+1, -(alpha+1), newDepth + doDeeperSearch, !cutNode);
 
       if (didLMR && !captureOrPromotion) {
         int bonus = value > alpha ?  stat_bonus(newDepth)
