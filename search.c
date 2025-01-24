@@ -1195,9 +1195,12 @@ moves_loop: // When in check search starts from here
     if (doFullDepthSearch) {
       value = -search_NonPV(pos, ss+1, -(alpha+1), newDepth + doDeeperSearch, !cutNode);
 
-      if (didLMR && !captureOrPromotion) {
+      if (didLMR) {
         int bonus = value > alpha ?  stat_bonus(newDepth)
                                   : -stat_bonus(newDepth);
+
+        if (captureOrPromotion)
+          bonus /= 4;
 
         update_cm_stats(ss, movedPiece, to_sq(move), bonus);
       }
