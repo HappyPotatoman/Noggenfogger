@@ -767,7 +767,8 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
   // Step 7. Futility pruning: child node
   if (   !ss->ttPv
       &&  depth < 9
-      &&  eval - futility_margin(depth, improving) >= beta
+      &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 256 >= beta
+      &&  eval >= beta
       &&  eval < 15000 ) // 50% larger than VALUE_KNOWN_WIN, but smaller than TB wins.
     return eval; // - futility_margin(depth); (do not do the right thing)
 
