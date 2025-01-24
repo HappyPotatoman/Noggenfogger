@@ -1138,7 +1138,7 @@ moves_loop: // When in check search starts from here
 
       // Increase reduction at root and non-PV nodes when the best move
       // does not change frequently
-      if ((rootNode || !PvNode) && pos->bestMoveChanges <= 2)
+      if (!PvNode && pos->bestMoveChanges <= 2)
         r++;
 
       // Decrease reduction if opponent's move count is high
