@@ -54,7 +54,7 @@ void cmh_init() {
   numCmhTables = 1;
   for (int j = 0; j < 12; j++)
     for (int k = 0; k < 40; k++)
-      cmhTable[0][0][j][k] = CounterMovePruneThreshold - 1;
+      cmhTable[0][0][j][k] = -69;
 }
 
 // thread_init() is where a search thread starts and initialises itself.
