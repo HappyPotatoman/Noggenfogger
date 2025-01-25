@@ -988,9 +988,11 @@ moves_loop: // When in check search starts from here
 
       } else {
 
-        int history =  (*cmh )[piece_to_index[movedPiece]][compress_square[to_sq(move)]]
-            + (*fmh )[piece_to_index[movedPiece]][compress_square[to_sq(move)]]
-            + (*fmh2)[piece_to_index[movedPiece]][compress_square[to_sq(move)]];
+        Piece adj_p = piece_to_index[movedPiece];
+        Square to = compress_square[to_sq(move)];
+        int history =  (*cmh )[adj_p][to]
+            + (*fmh )[adj_p][to]
+            + (*fmh2)[adj_p][to];
         // Countermoves based pruning
         if (   lmrDepth < 4
             && history < -3875 * (depth - 1))

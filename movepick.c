@@ -89,13 +89,14 @@ static void score_quiets(const Position *pos)
 
   for (ExtMove *m = st->cur; m < st->endMoves; m++) {
     uint32_t move = m->move & 4095;
-    Square to = move & 63;
+    Square to = compress_square[move & 63];
     Square from = move >> 6;
+    Piece adj_p = piece_to_index[piece_on(from)];
     m->value =      (*history)[c][move]
-              + 2 * (*cmh)[piece_to_index[piece_on(from)]][compress_square[to]]
-              +     (*fmh)[piece_to_index[piece_on(from)]][compress_square[to]]
-              +     (*fmh2)[piece_to_index[piece_on(from)]][compress_square[to]]
-              +     (*fmh3)[piece_to_index[piece_on(from)]][compress_square[to]];
+              + 2 * (*cmh)[adj_p][to]
+              +     (*fmh)[adj_p][to]
+              +     (*fmh2)[adj_p][to]
+              +     (*fmh3)[adj_p][to];
   }
 }
 
