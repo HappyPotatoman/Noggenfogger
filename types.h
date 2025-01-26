@@ -127,6 +127,9 @@
 typedef uint64_t Key;
 typedef uint64_t Bitboard;
 
+#define PAWN_CORRECTION_HISTORY_SIZE 16384
+#define CORRECTION_HISTORY_LIMIT 1024
+
 enum { MAX_MOVES = 128, MAX_PLY = 123 };
 
 // A move needs 16 bits to be stored
@@ -327,6 +330,9 @@ typedef int16_t PieceToHistory[12][40];
 typedef PieceToHistory CounterMoveHistoryStat[12][40];
 typedef int16_t ButterflyHistory[2][4096];
 typedef int16_t CapturePieceToHistory[16][64][8];
+
+typedef int16_t PawnCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE];
+typedef int16_t MaterialCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE];
 
 struct ExtMove {
   Move move;

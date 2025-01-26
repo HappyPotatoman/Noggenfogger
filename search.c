@@ -63,6 +63,18 @@ INLINE int futility_move_count(bool improving, Depth depth)
   return improving ? 3 + depth * depth : (3 + depth * depth) / 2;
 }
 
+INLINE int correction_value(Position *pos, Stack *ss) {
+  Color us = stm();
+  Value pcv = pawnCorrectionHistory[us][ss->pawnKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
+  Value mcv = materialCorrectionHistory[us][ss->materialKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
+  return (2 * pcv + mcv) / 3;
+}
+
+Value to_corrected_static_eval(Value v, int cv) {
+  v += 66 * cv / 512;
+  return clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
+}
+
 // History and stats update bonus, based on depth
 static Value stat_bonus(Depth depth)
 {
@@ -722,6 +734,9 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
       return ttValue;
   }
 
+  Value unadjustedStaticEval = VALUE_NONE;
+  Value corr_value = correction_value(pos, ss);
+
   // Step 6. Static evaluation of the position
   if (inCheck) {
     // Skip early pruning when in check
@@ -732,10 +747,13 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
     // Never assume anything about values stored in TT
     if ((eval = tte_eval(tte)) == VALUE_NONE)
       eval = evaluate(pos);
-    ss->staticEval = eval;
+    unadjustedStaticEval = ss->staticEval = eval;
 
     if (eval == VALUE_DRAW)
       eval = value_draw(pos);
+
+    Value newEval = to_corrected_static_eval(unadjustedStaticEval, corr_value);
+    ss->staticEval = eval = newEval;
 
     // Can ttValue be used as a better position evaluation?
     if (   ttValue != VALUE_NONE
@@ -743,13 +761,16 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
       eval = ttValue;
   } else {
     if ((ss-1)->currentMove != MOVE_NULL)
-      ss->staticEval = eval = evaluate(pos);
+      unadjustedStaticEval = ss->staticEval = eval = evaluate(pos);
     else
       ss->staticEval = eval = -(ss-1)->staticEval + 2 * Tempo;
 
+    Value newValue = to_corrected_static_eval(unadjustedStaticEval, corr_value);
+    ss->staticEval = eval = newValue;
+    
     if(!excludedMove)
     tte_save(tte, posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, 0,
-        eval);
+        unadjustedStaticEval);
   }
 
   if (   move_is_ok((ss-1)->currentMove)
@@ -1361,6 +1382,15 @@ moves_loop: // When in check search starts from here
         PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
         depth, bestMove, ss->staticEval);
 
+  if (!inCheck && (!bestMove || !is_capture(pos, bestMove))
+      && !(bestValue >= beta && bestValue <= ss->staticEval)
+      && !(!bestMove && bestValue >= ss->staticEval))
+      {
+        int bonus = clamp((int)(bestValue - ss->staticEval) * depth / 8, -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+        clamp_correction_histories(&pawnCorrectionHistory[stm()][ss->pawnKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
+        clamp_correction_histories(&materialCorrectionHistory[stm()][ss->materialKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
+      }
+
   assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
   return bestValue;
@@ -1438,6 +1468,9 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
                           : (tte_bound(tte) &  BOUND_UPPER)))
     return ttValue;
 
+  Value unadjustedStaticEval = VALUE_NONE;
+  Value corr_value = correction_value(pos, ss);
+
   // Evaluate the position statically
   if (InCheck) {
     ss->staticEval = VALUE_NONE;
@@ -1445,17 +1478,28 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
   } else {
     if (ss->ttHit) {
       // Never assume anything about values stored in TT
-      if ((ss->staticEval = bestValue = tte_eval(tte)) == VALUE_NONE)
-         ss->staticEval = bestValue = evaluate(pos);
+      if ((unadjustedStaticEval = ss->staticEval = bestValue = tte_eval(tte)) == VALUE_NONE)
+         unadjustedStaticEval = ss->staticEval = bestValue = evaluate(pos);
+
+      Value newEval = to_corrected_static_eval(unadjustedStaticEval, corr_value);
+
+      ss->staticEval = bestValue = newEval;
+
 
       // Can ttValue be used as a better position evaluation?
       if (    ttValue != VALUE_NONE
           && (tte_bound(tte) & (ttValue > bestValue ? BOUND_LOWER : BOUND_UPPER)))
         bestValue = ttValue;
     } else
-      ss->staticEval = bestValue =
+    {
+      unadjustedStaticEval = ss->staticEval = bestValue =
       (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
                                        : -(ss-1)->staticEval + 2 * Tempo;
+
+      Value newEval = to_corrected_static_eval(unadjustedStaticEval, corr_value);
+
+      ss->staticEval = bestValue = newEval;
+    }
 
     // Stand pat. Return immediately if static value is at least beta
     if (bestValue >= beta) {
@@ -1583,7 +1627,7 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
   tte_save(tte, posKey, value_to_tt(bestValue, ss->ply), pvHit,
       bestValue >= beta ? BOUND_LOWER :
       PvNode && bestValue > oldAlpha  ? BOUND_EXACT : BOUND_UPPER,
-      ttDepth, bestMove, ss->staticEval);
+      ttDepth, bestMove, unadjustedStaticEval);
 
   assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 

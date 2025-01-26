@@ -43,12 +43,15 @@ static void thread_idle_loop(Position *pos);
 ThreadPool Threads;
 MainThread mainThread;
 int numCmhTables = 0;
-CounterMoveHistoryStat cmhTable __attribute__((aligned(64))) = { 0 };
 CounterMoveStat counterMoves __attribute__((aligned(64))) = { 0 };
 ButterflyHistory mainHistory __attribute__((aligned(64))) = { 0 };
 CapturePieceToHistory captureHistory __attribute__((aligned(64))) = { 0 };
+PawnCorrectionHistory pawnCorrectionHistory __attribute__((aligned(64))) = { 0 };
+MaterialCorrectionHistory materialCorrectionHistory __attribute__((aligned(64))) = { 0 };
 PawnTable pawnTable __attribute__((aligned(64))) = { 0 };
 MaterialTable materialTable __attribute__((aligned(64))) = { 0 };
+CounterMoveHistoryStat cmhTable __attribute__((aligned(64))) = { 0 };
+
 
 void cmh_init() {
   numCmhTables = 1;

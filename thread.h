@@ -114,5 +114,7 @@ extern int numCmhTables;
 extern CounterMoveStat counterMoves;
 extern ButterflyHistory mainHistory;
 extern CapturePieceToHistory captureHistory;
+extern PawnCorrectionHistory pawnCorrectionHistory;
+extern MaterialCorrectionHistory materialCorrectionHistory;
 
 #endif

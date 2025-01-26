@@ -82,4 +82,11 @@ void search_clear(void);
 uint64_t perft(Position *pos, Depth depth);
 void start_thinking(Position *pos, bool ponderMode);
 
+INLINE void clamp_correction_histories(int16_t *entry, int bonus) {
+    int clampedBonus = clamp(bonus, -CORRECTION_HISTORY_LIMIT, CORRECTION_HISTORY_LIMIT);
+    *entry += clampedBonus - *entry * abs(clampedBonus) / CORRECTION_HISTORY_LIMIT;
+
+    assert(abs(*entry) <= CORRECTION_HISTORY_LIMIT);
+}
+
 #endif
