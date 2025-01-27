@@ -63,16 +63,20 @@ INLINE int futility_move_count(bool improving, Depth depth)
   return improving ? 3 + depth * depth : (3 + depth * depth) / 2;
 }
 
-INLINE int correction_value(Position *pos, Stack *ss) {
+int correction_value(Position *pos, Stack *ss) {
   Color us = stm();
   Value pcv = pawnCorrectionHistory[us][ss->pawnKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
   Value mcv = materialCorrectionHistory[us][ss->materialKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
-  return (2 * pcv + mcv) / 3;
+  Value macv = majorPieceCorrectionHistory[us][ss->majorPieceKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
+  Value micv = minorPieceCorrectionHistory[us][ss->minorPieceKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
+  Value wnpcv = nonPawnCorrectionHistory[WHITE][us][ss->nonPawnKey[WHITE] & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
+  Value bnpcv = nonPawnCorrectionHistory[BLACK][us][ss->nonPawnKey[BLACK] & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
+
+  return 98198 * pcv + 68968 * mcv + 54353 * macv + 85174 * micv + 85581 * (wnpcv + bnpcv);
 }
 
 Value to_corrected_static_eval(Value v, int cv) {
-  v += 66 * cv / 512;
-  return clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
+  return clamp(v + cv / 2097152, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 }
 
 // History and stats update bonus, based on depth
@@ -1386,9 +1390,14 @@ moves_loop: // When in check search starts from here
       && !(bestValue >= beta && bestValue <= ss->staticEval)
       && !(!bestMove && bestValue >= ss->staticEval))
       {
+        Color us = stm();
         int bonus = clamp((int)(bestValue - ss->staticEval) * depth / 8, -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
-        clamp_correction_histories(&pawnCorrectionHistory[stm()][ss->pawnKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
-        clamp_correction_histories(&materialCorrectionHistory[stm()][ss->materialKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
+        clamp_correction_histories(&pawnCorrectionHistory[us][ss->pawnKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
+        clamp_correction_histories(&materialCorrectionHistory[us][ss->materialKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
+        clamp_correction_histories(&majorPieceCorrectionHistory[us][ss->majorPieceKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
+        clamp_correction_histories(&minorPieceCorrectionHistory[us][ss->minorPieceKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
+        clamp_correction_histories(&nonPawnCorrectionHistory[WHITE][us][ss->nonPawnKey[WHITE] & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
+        clamp_correction_histories(&nonPawnCorrectionHistory[BLACK][us][ss->nonPawnKey[BLACK] & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus);
       }
 
   assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);

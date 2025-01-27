@@ -288,6 +288,7 @@ static void set_castling_right(Position *pos, Color c, Square rfrom)
 static void set_state(Position *pos, Stack *st)
 {
   st->key = st->materialKey = 0;
+  st->majorPieceKey = st->minorPieceKey = 0;
 #ifndef NNUE_PURE
   st->pawnKey = zob.noPawns;
   st->psq = 0;
@@ -305,7 +306,29 @@ static void set_state(Position *pos, Stack *st)
 #ifndef NNUE_PURE
     st->psq += psqt.psq[pc][s];
 #endif
+
+    if (type_of_p(pc) == PAWN)
+      st->pawnKey ^= zob.psq[pc][s];
+    else {
+      st->nonPawnKey[color_of(pc)] ^= zob.psq[pc][s];
+    
+      if (type_of_p(pc) != KING) {
+        if (type_of_p(pc) == QUEEN || type_of_p(pc) == ROOK)
+          st->majorPieceKey ^= zob.psq[pc][s];
+        else
+          st->minorPieceKey ^= zob.psq[pc][s];
+      } else {
+        st->majorPieceKey ^= zob.psq[pc][s];
+        st->minorPieceKey ^= zob.psq[pc][s];
+      }
+    }
+
   }
+
+
+  for (PieceType pt = KNIGHT; pt <= QUEEN; pt++)
+    for (int c = 0; c < 2; c++)
+      st->nonPawn += piece_count(c, pt) * NonPawnPieceValue[make_piece(c, pt)];
 
 // emulate a bug in Stockfish
 //  if (st->epSquare != 0)
@@ -316,21 +339,10 @@ static void set_state(Position *pos, Stack *st)
 
   st->key ^= zob.castling[st->castlingRights];
 
-#ifndef NNUE_PURE
-  for (Bitboard b = pieces_p(PAWN); b; ) {
-    Square s = pop_lsb(&b);
-    st->pawnKey ^= zob.psq[piece_on(s)][s];
-  }
-#endif
-
   for (PieceType pt = PAWN; pt <= KING; pt++) {
     st->materialKey += piece_count(WHITE, pt) * matKey[8 * WHITE + pt];
     st->materialKey += piece_count(BLACK, pt) * matKey[8 * BLACK + pt];
   }
-
-  for (PieceType pt = KNIGHT; pt <= QUEEN; pt++)
-    for (int c = 0; c < 2; c++)
-      st->nonPawn += piece_count(c, pt) * NonPawnPieceValue[make_piece(c, pt)];
 }
 
 // Turning slider_blockers() into an inline function was slower, even
@@ -735,6 +747,8 @@ void do_move(Position *pos, Move m, int givesCheck)
     st->psq += psqt.psq[captured][rto] - psqt.psq[captured][rfrom];
 #endif
     key ^= zob.psq[captured][rfrom] ^ zob.psq[captured][rto];
+    st->majorPieceKey ^= zob.psq[captured][rfrom] ^ zob.psq[captured][rto];
+    st->nonPawnKey[us] ^= zob.psq[captured][rfrom] ^ zob.psq[captured][rto];
     captured = 0;
   }
 
@@ -760,7 +774,16 @@ void do_move(Position *pos, Move m, int givesCheck)
       st->pawnKey ^= zob.psq[captured][capsq];
 #endif
     } else
+    {
       st->nonPawn -= NonPawnPieceValue[captured];
+      st->nonPawnKey[them] ^= zob.psq[captured][capsq];
+
+      if (type_of_p(piece) == QUEEN || type_of_p(piece) == ROOK)
+        st->majorPieceKey ^= zob.psq[captured][capsq];
+      else
+        st->minorPieceKey ^= zob.psq[captured][capsq];
+    }
+      
 
 #ifdef NNUE
     dp->dirtyNum = 2; // captured piece goes off the board
@@ -831,6 +854,7 @@ void do_move(Position *pos, Move m, int givesCheck)
     }
     else if (type_of_m(m) == PROMOTION) {
       Piece promotion = make_piece(us, promotion_type(m));
+      PieceType promotionType = type_of_p(promotion);
 
       assert(relative_rank_s(us, to) == RANK_8);
       assert(type_of_p(promotion) >= KNIGHT && type_of_p(promotion) <= QUEEN);
@@ -855,6 +879,11 @@ void do_move(Position *pos, Move m, int givesCheck)
 #endif
       st->materialKey += matKey[promotion] - matKey[piece];
 
+      if (promotionType == QUEEN || promotionType == ROOK)
+        st->majorPieceKey ^= zob.psq[promotion][to];
+      else 
+        st->minorPieceKey ^= zob.psq[promotion][to];
+
 #ifndef NNUE_PURE
       // Update incremental score
       st->psq += psqt.psq[promotion][to] - psqt.psq[piece][to];
@@ -872,6 +901,19 @@ void do_move(Position *pos, Move m, int givesCheck)
 
     // Reset ply counters.
     st->plyCounters = 0;
+  } else {
+    st->nonPawnKey[us] ^= zob.psq[piece][from] ^ zob.psq[piece][to];
+
+    if (type_of_p(piece) == KING) {
+      st->majorPieceKey ^= zob.psq[piece][from] ^ zob.psq[piece][to];
+      st->minorPieceKey ^= zob.psq[piece][from] ^ zob.psq[piece][to];
+    }
+
+    else if (type_of_p(piece) == QUEEN || type_of_p(piece) == ROOK)
+        st->majorPieceKey ^= zob.psq[piece][from] ^ zob.psq[piece][to];
+    
+    else
+        st->minorPieceKey ^= zob.psq[piece][from] ^ zob.psq[piece][to];
   }
 
 #ifndef NNUE_PURE

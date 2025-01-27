@@ -59,6 +59,9 @@ struct Stack {
   Key pawnKey;
 #endif
   Key materialKey;
+  Key majorPieceKey;
+  Key minorPieceKey;
+  Key nonPawnKey[2];
 #ifndef NNUE_PURE
   Score psq;
 #endif
@@ -258,6 +261,9 @@ PURE bool has_game_cycle(const Position *pos, int ply);
 #define key() (pos->st->rule50 < 14 ? pos->st->key : pos->st->key ^ make_key((pos->st->rule50 - 14) / 8))
 #define material_key() (pos->st->materialKey)
 #define pawn_key() (pos->st->pawnKey)
+#define major_piece_key() (pos->st->majorPieceKey)
+#define minor_piece_key() (pos->st->minorPieceKey)
+#define non_pawn_key(c) (pos->st->nonPawnKey[c])
 
 // Other properties of the position
 #define stm() (pos->sideToMove)
