@@ -869,7 +869,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
         probCutCount--;
 
         ss->currentMove = move;
-        ss->history = &cmhTable[piece_to_index[moved_piece(move)]][compress_square[to_sq(move)]];
+        ss->history = &cmhTable[piece_to_index[moved_piece(move)]][to_sq(move)];
         givesCheck = gives_check(pos, ss, move);
         do_move(pos, move, givesCheck);
 
@@ -1010,7 +1010,7 @@ moves_loop: // When in check search starts from here
       } else {
 
         Piece adj_p = piece_to_index[movedPiece];
-        Square to = compress_square[to_sq(move)];
+        Square to = to_sq(move);
         int history =  (*cmh )[adj_p][to]
             + (*fmh )[adj_p][to]
             + (*fmh2)[adj_p][to];
@@ -1129,7 +1129,7 @@ moves_loop: // When in check search starts from here
     // Update the current move (this must be done after singular extension
     // search)
     ss->currentMove = move;
-    ss->history = &cmhTable[piece_to_index[movedPiece]][compress_square[to_sq(move)]];
+    ss->history = &cmhTable[piece_to_index[movedPiece]][to_sq(move)];
 
     // Step 15. Make the move.
     do_move(pos, move, givesCheck);
@@ -1190,10 +1190,10 @@ moves_loop: // When in check search starts from here
         r += 2;
 
       uint8_t adj_piece = piece_to_index[movedPiece];
-      uint8_t adj_sq = compress_square[to_sq(move)];
-      ss->statScore =  (*cmh )[adj_piece][adj_sq]
-                      + (*fmh )[adj_piece][adj_sq]
-                      + (*fmh2)[adj_piece][adj_sq]
+      uint8_t to = to_sq(move);
+      ss->statScore =  (*cmh )[adj_piece][to]
+                      + (*fmh )[adj_piece][to]
+                      + (*fmh2)[adj_piece][to]
                       + (mainHistory)[!stm()][from_to(move)]
                       - 4923;
 
@@ -1572,13 +1572,13 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
     ss->currentMove = move;
     bool captureOrPromotion = is_capture_or_promotion(pos, move);
     uint8_t adj_piece = piece_to_index[moved_piece(move)];
-    uint8_t adj_sq = compress_square[to_sq(move)];
-    ss->history = &cmhTable[adj_piece][adj_sq];
+    uint8_t to = to_sq(move);
+    ss->history = &cmhTable[adj_piece][to];
 
     if (  !captureOrPromotion
         && bestValue > VALUE_TB_LOSS_IN_MAX_PLY
-        && (*(ss-1)->history)[adj_piece][adj_sq] < CounterMovePruneThreshold
-        && (*(ss-2)->history)[adj_piece][adj_sq] < CounterMovePruneThreshold)
+        && (*(ss-1)->history)[adj_piece][to] < CounterMovePruneThreshold
+        && (*(ss-2)->history)[adj_piece][to] < CounterMovePruneThreshold)
       continue;
     
     if ( bestValue > VALUE_TB_LOSS_IN_MAX_PLY
@@ -1731,22 +1731,21 @@ static void update_cm_stats(Stack *ss, Piece pc, Square s, int bonus)
   if (adjusted_pc == UINT8_MAX) {
       return;
   }
-  Square adjusted_sq = compress_square[s];
 
   if (move_is_ok((ss-1)->currentMove))
-    cms_update(*(ss-1)->history, adjusted_pc, adjusted_sq, bonus);
+    cms_update(*(ss-1)->history, adjusted_pc, s, bonus);
 
   if (move_is_ok((ss-2)->currentMove))
-    cms_update(*(ss-2)->history, adjusted_pc, adjusted_sq, bonus);
+    cms_update(*(ss-2)->history, adjusted_pc, s, bonus);
 
   if (ss->checkersBB)
     return;
 
   if (move_is_ok((ss-4)->currentMove))
-    cms_update(*(ss-4)->history, adjusted_pc, adjusted_sq, bonus);
+    cms_update(*(ss-4)->history, adjusted_pc, s, bonus);
 
   if (move_is_ok((ss-6)->currentMove))
-    cms_update(*(ss-6)->history, adjusted_pc, adjusted_sq, bonus);
+    cms_update(*(ss-6)->history, adjusted_pc, s, bonus);
 }
 
 // update_capture_stats() updates move sorting heuristics when a new capture
