@@ -115,8 +115,6 @@ extern CounterMoveStat counterMoves;
 extern ButterflyHistory mainHistory;
 extern CapturePieceToHistory captureHistory;
 extern PawnCorrectionHistory pawnCorrectionHistory;
-extern MaterialCorrectionHistory materialCorrectionHistory;
-extern MajorPieceCorrectionHistory majorPieceCorrectionHistory;
 extern MinorPieceCorrectionHistory minorPieceCorrectionHistory;
 extern NonPawnCorrectionHistory nonPawnCorrectionHistory;
 

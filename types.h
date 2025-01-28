@@ -328,12 +328,10 @@ typedef PieceToHistory CounterMoveHistoryStat[8][64];
 typedef int16_t ButterflyHistory[2][4096];
 typedef int16_t CapturePieceToHistory[16][64][8];
 
-#define PAWN_CORRECTION_HISTORY_SIZE 8192
+#define PAWN_CORRECTION_HISTORY_SIZE 16384
 #define CORRECTION_HISTORY_LIMIT 1024
 
 typedef int16_t PawnCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE];
-typedef int16_t MaterialCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE];
-typedef int16_t MajorPieceCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE];
 typedef int16_t MinorPieceCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE];
 typedef int16_t NonPawnCorrectionHistory[2][2][PAWN_CORRECTION_HISTORY_SIZE];
 
