@@ -181,8 +181,6 @@ static const Score UncontestedOutpost  = S(  1, 10);
 static const Score WeakQueen           = S( 56, 15);
 static const Score WeakQueenProtection = S( 14,  0);
 
-static const Value CorneredBishopV     = 50;
-
 #undef S
 #undef V
 

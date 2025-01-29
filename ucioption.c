@@ -131,13 +131,6 @@ void options_init()
   char *s;
   size_t len;
 
-#ifdef NUMA
-  // On a non-NUMA machine, disable the NUMA option to diminish confusion.
-  if (!numaAvail)
-    optionsMap[OPT_NUMA].type = OPT_TYPE_DISABLED;
-#else
-  optionsMap[OPT_NUMA].type = OPT_TYPE_DISABLED;
-#endif
 #ifdef _WIN32
   // Disable the LargePages option if the machine does not support it.
   if (!large_pages_supported())
@@ -184,10 +177,6 @@ void options_free(void)
     if (opt->type == OPT_TYPE_STRING)
       free(opt->valString);
 }
-
-static const char *optTypeStr[] = {
-  "check", "spin", "button", "string", "combo"
-};
 
 int option_value(int optIdx)
 {

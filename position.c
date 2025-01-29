@@ -329,7 +329,7 @@ static void set_state(Position *pos, Stack *st)
 
 // emulate a bug in Stockfish
 //  if (st->epSquare != 0)
-    st->key ^= zob.enpassant[file_of(st->epSquare)];
+  st->key ^= zob.enpassant[file_of(st->epSquare)];
 
   if (stm() == BLACK)
     st->key ^= zob.side;
