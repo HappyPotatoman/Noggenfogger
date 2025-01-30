@@ -329,11 +329,12 @@ typedef int16_t ButterflyHistory[2][4096];
 typedef int16_t CapturePieceToHistory[16][64][8];
 
 #define PAWN_CORRECTION_HISTORY_SIZE 16384
+#define NON_PAWN_CORRECTION_HISTORY_SIZE 8192
 #define CORRECTION_HISTORY_LIMIT 1024
 
 typedef int16_t PawnCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE];
 typedef int16_t MinorPieceCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE];
-typedef int16_t NonPawnCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE][2];
+typedef int16_t NonPawnCorrectionHistory[2][NON_PAWN_CORRECTION_HISTORY_SIZE][2];
 
 struct ExtMove {
   Move move;

@@ -67,8 +67,8 @@ int correction_value(Position *pos, Stack *ss) {
   Color us = stm();
   Value pcv = pawnCorrectionHistory[us][ss->pawnKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
   Value micv = minorPieceCorrectionHistory[us][ss->minorPieceKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)];
-  Value wnpcv = nonPawnCorrectionHistory[WHITE][ss->nonPawnKey[WHITE] & (PAWN_CORRECTION_HISTORY_SIZE - 1)][us];
-  Value bnpcv = nonPawnCorrectionHistory[BLACK][ss->nonPawnKey[BLACK] & (PAWN_CORRECTION_HISTORY_SIZE - 1)][us];
+  Value wnpcv = nonPawnCorrectionHistory[WHITE][ss->nonPawnKey[WHITE] & (NON_PAWN_CORRECTION_HISTORY_SIZE - 1)][us];
+  Value bnpcv = nonPawnCorrectionHistory[BLACK][ss->nonPawnKey[BLACK] & (NON_PAWN_CORRECTION_HISTORY_SIZE - 1)][us];
 
   return 7000 * pcv + 6300 * micv + 7550 * (wnpcv + bnpcv);
 }
@@ -1392,8 +1392,8 @@ moves_loop: // When in check search starts from here
         int bonus = clamp((int)(bestValue - ss->staticEval) * depth / 8, -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
         clamp_correction_histories(&pawnCorrectionHistory[us][ss->pawnKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus * 114 / 128);
         clamp_correction_histories(&minorPieceCorrectionHistory[us][ss->minorPieceKey & (PAWN_CORRECTION_HISTORY_SIZE - 1)], bonus * 146 / 128);
-        clamp_correction_histories(&nonPawnCorrectionHistory[WHITE][ss->nonPawnKey[WHITE] & (PAWN_CORRECTION_HISTORY_SIZE - 1)][us], bonus * 165 / 128);
-        clamp_correction_histories(&nonPawnCorrectionHistory[BLACK][ss->nonPawnKey[BLACK] & (PAWN_CORRECTION_HISTORY_SIZE - 1)][us], bonus * 165 / 128);
+        clamp_correction_histories(&nonPawnCorrectionHistory[WHITE][ss->nonPawnKey[WHITE] & (NON_PAWN_CORRECTION_HISTORY_SIZE - 1)][us], bonus * 165 / 128);
+        clamp_correction_histories(&nonPawnCorrectionHistory[BLACK][ss->nonPawnKey[BLACK] & (NON_PAWN_CORRECTION_HISTORY_SIZE - 1)][us], bonus * 165 / 128);
       }
 
   assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
