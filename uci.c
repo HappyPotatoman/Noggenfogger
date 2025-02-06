@@ -310,6 +310,14 @@ void uci_loop(int argc, char **argv)
       }
       UNLOCK(Threads.lock);
     }
+    else if (strcmp(token, "uci") == 0) {
+      flockfile(stdout);
+      printf("id name Noggenfogger");
+      printf("\n");
+      printf("uciok\n");
+      fflush(stdout);
+      funlockfile(stdout);
+    }
     else if (strcmp(token, "isready") == 0) {
       process_delayed_settings();
       printf("readyok\n");
