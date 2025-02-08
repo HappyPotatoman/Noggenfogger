@@ -176,7 +176,7 @@ struct Position {
   
   // Thread-control data.
   uint64_t bestMoveChanges;
-  bool resetCalls;
+  atomic_bool resetCalls;
   int callsCnt;
   int action;
   int threadIdx;
