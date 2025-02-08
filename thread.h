@@ -37,11 +37,11 @@
 #define MAX_SQUARES 64
 
 #ifndef _WIN32
-#define LOCK_T int
-#define LOCK_INIT(x) (void)(x)
-#define LOCK_DESTROY(x) (void)(x)
-#define LOCK(x) (void)(x)
-#define UNLOCK(x) (void)(x)
+#define LOCK_T pthread_mutex_t
+#define LOCK_INIT(x) pthread_mutex_init(&(x), NULL)
+#define LOCK_DESTROY(x) pthread_mutex_destroy(&(x))
+#define LOCK(x) pthread_mutex_lock(&(x))
+#define UNLOCK(x) pthread_mutex_unlock(&(x))
 #else
 #define LOCK_T HANDLE
 #define LOCK_INIT(x) do { x = CreateMutex(NULL, FALSE, NULL); } while (0)
