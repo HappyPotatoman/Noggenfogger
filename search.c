@@ -872,7 +872,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
         probCutCount--;
 
         ss->currentMove = move;
-        ss->history = &cmhTable[inCheck][piece_to_index[moved_piece(move)]][to_sq(move)];
+        ss->history = &cmhTable[inCheck || captureOrPromotion][piece_to_index[moved_piece(move)]][to_sq(move)];
         givesCheck = gives_check(pos, ss, move);
         do_move(pos, move, givesCheck);
 
@@ -1132,7 +1132,7 @@ moves_loop: // When in check search starts from here
     // Update the current move (this must be done after singular extension
     // search)
     ss->currentMove = move;
-    ss->history = &cmhTable[inCheck][piece_to_index[movedPiece]][to_sq(move)];
+    ss->history = &cmhTable[inCheck || captureOrPromotion][piece_to_index[movedPiece]][to_sq(move)];
 
     // Step 15. Make the move.
     do_move(pos, move, givesCheck);
@@ -1579,7 +1579,7 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
     bool captureOrPromotion = is_capture_or_promotion(pos, move);
     uint8_t adj_piece = piece_to_index[moved_piece(move)];
     uint8_t to = to_sq(move);
-    ss->history = &cmhTable[InCheck][adj_piece][to];
+    ss->history = &cmhTable[InCheck || captureOrPromotion][adj_piece][to];
 
     if (  !captureOrPromotion
         && bestValue > VALUE_TB_LOSS_IN_MAX_PLY
