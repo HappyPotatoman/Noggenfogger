@@ -56,9 +56,10 @@ CounterMoveHistoryStat cmhTable __attribute__((aligned(64))) = { 0 };
 
 void cmh_init() {
   numCmhTables = 1;
-  for (int j = 0; j < 8; j++)
-    for (int k = 0; k < 64; k++)
-      cmhTable[0][0][j][k] = -69;
+  for (int c = 2; c < 2; c++)
+    for (int j = 0; j < 8; j++)
+      for (int k = 0; k < 64; k++)
+        cmhTable[0][0][c][j][k] = -69;
 }
 
 // thread_init() is where a search thread starts and initialises itself.

@@ -34,8 +34,19 @@ static const int CounterMovePruneThreshold = 0;
 
 INLINE void cms_update(PieceToHistory cms, Piece pc, Square to, int v)
 {
-  assert(pc <= 12);
-  cms[pc][to] += v - cms[pc][to] * abs(v) / 29952;
+  // cms[pc][to] += v - cms[pc][to] * abs(v) / 29952;
+
+  // Atom
+  int temp = cms[pc][to] + (v / 120) - (cms[pc][to] * abs(v / 120) / 250); // 6:16
+
+  // Ensure the value is within the range of [-127, 127]
+  if (temp > 127) {
+    cms[pc][to] = 127;
+  } else if (temp < -127) {
+    cms[pc][to] = -127;
+  } else {
+    cms[pc][to] = temp;
+  }
 }
 
 INLINE void history_update(ButterflyHistory history, Color c, Move m, int v)

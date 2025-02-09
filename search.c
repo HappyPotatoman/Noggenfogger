@@ -364,7 +364,7 @@ void thread_search(Position *pos)
   (ss-1)->endMoves = pos->moveList;
 
   for (int i = -7; i < 0; i++)
-    ss[i].history = &cmhTable[0][0]; // Use as sentinel
+    ss[i].history = &cmhTable[0][0][0]; // Use as sentinel
 
   for (int i = 0; i <= MAX_PLY; i++)
     ss[i].ply = i;
@@ -813,7 +813,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
     Depth R = min((eval - beta) / 205, 3) + depth / 3 + 4;
 
     ss->currentMove = MOVE_NULL;
-    ss->history = &cmhTable[0][0];
+    ss->history = &cmhTable[0][0][0];
 
     do_null_move(pos);
     ss->endMoves = (ss-1)->endMoves;
@@ -872,7 +872,7 @@ INLINE Value search_node(Position *pos, Stack *ss, Value alpha, Value beta,
         probCutCount--;
 
         ss->currentMove = move;
-        ss->history = &cmhTable[piece_to_index[moved_piece(move)]][to_sq(move)];
+        ss->history = &cmhTable[inCheck][piece_to_index[moved_piece(move)]][to_sq(move)];
         givesCheck = gives_check(pos, ss, move);
         do_move(pos, move, givesCheck);
 
@@ -1014,9 +1014,9 @@ moves_loop: // When in check search starts from here
 
         Piece adj_p = piece_to_index[movedPiece];
         Square to = to_sq(move);
-        int history =  (*cmh )[adj_p][to]
-            + (*fmh )[adj_p][to]
-            + (*fmh2)[adj_p][to];
+        int history =  (*cmh )[adj_p][to] * 120
+            + (*fmh )[adj_p][to] * 120
+            + (*fmh2)[adj_p][to] * 120;
         // Countermoves based pruning
         if (   lmrDepth < 4
             && history < -3875 * (depth - 1))
@@ -1132,7 +1132,7 @@ moves_loop: // When in check search starts from here
     // Update the current move (this must be done after singular extension
     // search)
     ss->currentMove = move;
-    ss->history = &cmhTable[piece_to_index[movedPiece]][to_sq(move)];
+    ss->history = &cmhTable[inCheck][piece_to_index[movedPiece]][to_sq(move)];
 
     // Step 15. Make the move.
     do_move(pos, move, givesCheck);
@@ -1194,9 +1194,9 @@ moves_loop: // When in check search starts from here
 
       uint8_t adj_piece = piece_to_index[movedPiece];
       uint8_t to = to_sq(move);
-      ss->statScore =  (*cmh )[adj_piece][to]
-                      + (*fmh )[adj_piece][to]
-                      + (*fmh2)[adj_piece][to]
+      ss->statScore =  (*cmh )[adj_piece][to] * 120
+                      + (*fmh )[adj_piece][to] * 120
+                      + (*fmh2)[adj_piece][to] * 120
                       + (mainHistory)[!stm()][from_to(move)]
                       - 4923;
 
@@ -1522,7 +1522,7 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
     futilityBase = bestValue + 155;
   }
 
-  ss->history = &cmhTable[0][0];
+  ss->history = &cmhTable[0][0][0];
 
   // Initialize move picker data for the current position, and prepare
   // to search the moves. Because the depth is <= 0 here, only captures,
@@ -1579,7 +1579,7 @@ INLINE Value qsearch_node(Position *pos, Stack *ss, Value alpha, Value beta,
     bool captureOrPromotion = is_capture_or_promotion(pos, move);
     uint8_t adj_piece = piece_to_index[moved_piece(move)];
     uint8_t to = to_sq(move);
-    ss->history = &cmhTable[adj_piece][to];
+    ss->history = &cmhTable[InCheck][adj_piece][to];
 
     if (  !captureOrPromotion
         && bestValue > VALUE_TB_LOSS_IN_MAX_PLY

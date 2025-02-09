@@ -323,8 +323,8 @@ typedef struct PawnEntry PawnEntry;
 typedef struct MaterialEntry MaterialEntry;
 
 typedef Move CounterMoveStat[16][64];
-typedef int16_t PieceToHistory[8][64];
-typedef PieceToHistory CounterMoveHistoryStat[8][64];
+typedef int8_t PieceToHistory[8][64];
+typedef PieceToHistory CounterMoveHistoryStat[2][8][64];
 typedef int16_t ButterflyHistory[2][4096];
 typedef int16_t CapturePieceToHistory[16][64][8];
 

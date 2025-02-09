@@ -93,10 +93,10 @@ static void score_quiets(const Position *pos)
     Square from = move >> 6;
     Piece adj_p = piece_to_index[piece_on(from)];
     m->value =      (*history)[c][move]
-              + 2 * (*cmh)[adj_p][to]
-              +     (*fmh)[adj_p][to]
-              +     (*fmh2)[adj_p][to]
-              +     (*fmh3)[adj_p][to];
+              + 2 * (*cmh)[adj_p][to] * 120
+              +     (*fmh)[adj_p][to] * 120
+              +     (*fmh2)[adj_p][to] * 120
+              +     (*fmh3)[adj_p][to] * 120;
   }
 }
 
@@ -116,7 +116,7 @@ static void score_evasions(const Position *pos)
                 - type_of_p(moved_piece(m->move));
     else
       m->value =      (*history)[c][from_to(m->move)]
-                + 2 * (*cmh)[piece_to_index[moved_piece(m->move)]][to_sq(m->move)]
+                + 2 * (*cmh)[piece_to_index[moved_piece(m->move)]][to_sq(m->move)] * 120
                 - (1 << 28);
 }
 
