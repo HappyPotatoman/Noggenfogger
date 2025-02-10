@@ -323,14 +323,14 @@ typedef struct PawnEntry PawnEntry;
 typedef struct MaterialEntry MaterialEntry;
 
 typedef Move CounterMoveStat[16][64];
-typedef int8_t PieceToHistory[8][64];
-typedef PieceToHistory CounterMoveHistoryStat[2][8][64];
+typedef int8_t PieceToHistory[12][64];
+typedef PieceToHistory CounterMoveHistoryStat[2][12][64];
 typedef int16_t ButterflyHistory[2][4096];
 typedef int16_t CapturePieceToHistory[16][64][8];
 
 #define PAWN_CORRECTION_HISTORY_SIZE 16384
 #define MINOR_CORRECTION_HISTORY_SIZE 16384
-#define NON_PAWN_CORRECTION_HISTORY_SIZE 16384
+#define NON_PAWN_CORRECTION_HISTORY_SIZE 8192
 #define CORRECTION_HISTORY_LIMIT 1024
 
 typedef int16_t PawnCorrectionHistory[2][PAWN_CORRECTION_HISTORY_SIZE];

@@ -294,8 +294,8 @@ void free_memory(alloc_t *alloc)
 
 const uint8_t piece_to_index[16] = {
     UINT8_MAX,  // 0: Invalid
-    0, 1, 1, 2, 2, 3,  // 1–6: White pieces (mapped to 0–5)
+    0, 1, 2, 3, 4, 5,  // 1–6: White pieces (mapped to 0–5)
     UINT8_MAX, UINT8_MAX,  // 7–8: Unused
-    4, 5, 5, 6, 6, 7,  // 9–14: Black pieces (mapped to 6–11)
+    6, 7, 8, 9, 10, 11,  // 9–14: Black pieces (mapped to 6–11)
     UINT8_MAX   // 15: Unused
 };
